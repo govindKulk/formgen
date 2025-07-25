@@ -1,62 +1,83 @@
 "use client";
 
 import React from 'react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton
-} from "@/components/ui/sidebar";
-
-import {
-    Input,
-    Button,
-    Card,
-    Checkbox,
-    Dialog,
-    Label,
-    Select,
-    Switch,
-    Table,
-    Tabs,
-    Textarea,
-    Tooltip 
-} from "@/components/ui/form-fields";
-
-import Image from 'next/image';
-import Logo from "@/public/Logo.svg"; // Assuming you have a Logo SVG
+import { Sidebar, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
+import { useDraggable } from '@dnd-kit/core';
+import { FormComponentType } from '@/store/form';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
+import Logo from "@/public/Logo.svg";
+import { Input } from './ui/input';
+import { GripVertical } from 'lucide-react';
 
-// NOTE: I'm only including a few components for this example to keep it concise.
-// The principle applies to all your components.
-const components = [
-    { label: "Input", Component: Input },
-    { label: "Textarea", Component: Textarea },
-    { label: "Button", Component: Button },
-    { label: "Checkbox", Component: Checkbox },
-    { label: "Select", Component: Select },
-    { label: "Switch", Component: Switch },
-    { label: "Label", Component: Label },
-    { label: "Dialog", Component: Dialog },
-    { label: "Tooltip", Component: Tooltip }
-];
+// A list of the component types you want to offer
+const componentTypes: FormComponentType[] = ["Input", "Textarea", "Button", "Checkbox", "Select", "Switch", "Label"];
+
+// Reusable component for each draggable item in the sidebar
+function SidebarItem({ type }: { type: FormComponentType }) {
+    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+        id: `sidebar-item-${type}`,
+        // Pass the component type in the data object so we know what to create on drop
+        data: { type },
+    });
+
+    return (
+        <Button
+            ref={setNodeRef}
+            variant="outline"
+            className={`w-full flex items-center gap-2 p-3 bg-gray-50 border rounded-lg dark:bg-gray-800 h-auto cursor-grab transition-all ${isDragging ? 'opacity-30 ring-2 ring-primary' : 'hover:shadow-md'}`}
+            {...listeners}
+            {...attributes}
+        >
+            <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <div className="flex flex-col gap-1 items-start flex-1">
+                <span className="text-sm font-medium">{type}</span>
+                <div className="w-full">
+                    {type === "Input" && <Input  
+                    className="border border-neutral-500 h-8"
+                    placeholder="Type here..." />}
+                    {type === "Textarea" && <textarea  
+                    className="border border-neutral-500 rounded px-2 py-1 w-full resize-none text-xs"
+                    placeholder="Type here..."
+                    rows={2} />}
+                    {type === "Button" && <Button 
+                    size="sm" 
+                    className="pointer-events-none h-7 text-xs">
+                    Click me
+                    </Button>}
+                    {type === "Checkbox" && <div className="flex items-center gap-2">
+                    <input type="checkbox" className="pointer-events-none" />
+                    <span className="text-xs">Checkbox</span>
+                    </div>}
+                    {type === "Select" && <select 
+                    className="border border-neutral-500 rounded px-2 py-1 w-full pointer-events-none text-xs h-8">
+                    <option>Select option</option>
+                    </select>}
+                    {type === "Switch" && <div className="flex items-center gap-2">
+                    <div className="w-8 h-4 bg-gray-300 rounded-full relative">
+                        <div className="w-3 h-3 bg-white rounded-full absolute top-0.5 left-0.5"></div>
+                    </div>
+                    <span className="text-xs">Switch</span>
+                    </div>}
+                    {type === "Label" && <label className="text-xs font-medium">Label text</label>}
+                    {type === "Dialog" && <div className="border border-neutral-500 rounded px-2 py-1 w-full text-xs text-center h-7 flex items-center justify-center">
+                    Dialog
+                    </div>}
+                    {type === "Tooltip" && <div className="border border-neutral-500 rounded px-2 py-1 w-full text-xs text-center h-7 flex items-center justify-center">
+                    Tooltip
+                    </div>}
+                </div>
+            </div>
+        </Button>
+    );
+}
 
 function FormCreateSidebar() {
-  const handleDragStart = (e: React.DragEvent, componentType: string) => {
-    // This sets the data that will be available when the item is dropped
-    e.dataTransfer.setData("componentType", componentType);
-  };
-
   return (
    <Sidebar>
       <SidebarHeader className="p-4 border-b">
         <Link href="/">
-          {/* Using Image component for SVG */}
           <Image src={Logo} alt="Logo" className="w-24 h-auto" />
         </Link>
       </SidebarHeader>
@@ -68,52 +89,13 @@ function FormCreateSidebar() {
             </SidebarGroupLabel>
             
             <div className="grid grid-cols-1 gap-4">
-                {components.map((item) => (
-                    <div
-                        key={item.label}
-                        // onDragStart={(e) => handleDragStart(e, item.label)}
-                        className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800  "
-                    >
-                        <Label className="font-medium text-gray-700 dark:text-gray-300">{item.label}</Label>
-                        <div className="mt-2   bg-white dark:bg-gray-900 ">
-                            {/* Add props to make components visible */}
-                            {item.label === "Input" && <Input draggable placeholder="Example Input"  />}
-                            {item.label === "Textarea" && <Textarea draggable placeholder="Example Textarea"  />}
-                            {item.label === "Button" && <Button draggable >Example Button</Button>}
-                            {item.label === "Checkbox" && (
-                                <div className="flex items-center space-x-2" draggable >
-                                    <Checkbox id={`cb-${item.label}`} />
-                                    <Label htmlFor={`cb-${item.label}`}>Checkbox</Label>
-                                </div>
-                            )}
-                            {item.label === "Select" && (
-                                <Select >
-                                    <option>Select Option</option>
-                                </Select>
-                            )}
-                            {item.label === "Switch" && (
-                                <div className="flex items-center space-x-2" draggable >
-                                    <Switch id={`sw-${item.label}`} />
-                                    <Label htmlFor={`sw-${item.label}`}>Switch</Label>
-                                </div>
-                            )}
-                            {item.label === "Label" && <Label draggable >Example Label</Label>}
-                            {item.label === "Card" && (
-                                <Card className="p-2" draggable >
-                                    <div>Card Content</div>
-                                </Card>
-                            )}
-                            {item.label === "Dialog" && <div className="text-sm text-gray-500" draggable >Dialog Component</div>}
-                           
-                            
-                            {item.label === "Tooltip" && <div className="text-sm text-gray-500" draggable >Tooltip Component</div>}
-                        </div>
-                    </div>
+                {/* Map over the component types to create a draggable item for each */}
+                {componentTypes.map((type) => (
+                    <SidebarItem key={type} type={type} />
                 ))}
             </div>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
     </Sidebar>
   );
 }
