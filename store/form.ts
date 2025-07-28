@@ -16,6 +16,10 @@ export interface FormComponent {
         checked?: boolean;
         value?: string;
         buttonText?: string;
+        checkboxText?: string;
+        switchText?: string;
+        labelText?: string;
+        textareaRows?: number;
     }
 }
 
@@ -25,34 +29,50 @@ export interface FormComponent {
 interface FormStore {
   components: FormComponent[];
   title: string;
+  stepTitle: string;
+  primaryColor: string;
   activeComponentId?: string;
   submissionMessage: string;
   setSubmissionMessage: (message: string) => void;
   setTitle: (title: string) => void;
+  setStepTitle: (stepTitle: string) => void;
+  setPrimaryColor: (color: string) => void;
   setActiveComponentId: (id?: string) => void;
   addComponent: (index: number, type: FormComponentType) => void;
   removeComponent: (id: string) => void;
   moveComponent: (dragIndex: number, hoverIndex: number) => void;
   updateComponent: (id: string, props: Partial<FormComponent['props']>) => void;
+  updateComponentMeta: (id: string, meta: Partial<Omit<FormComponent, 'props'>>) => void;
   reorderComponents: (newOrder: FormComponent[]) => void;
 }
 
 export const useFormStore = create<FormStore>((set) => ({
   components: [],
   title: 'My Form',
+  stepTitle: 'Step 1',
+  primaryColor: '#3b82f6',
   activeComponentId: undefined,
   submissionMessage: 'Form submitted successfully!',
   setSubmissionMessage: (message) => set({ submissionMessage: message }),
   setActiveComponentId: (id) => set({ activeComponentId: id }),
   setTitle: (title) => set({ title }),
+  setStepTitle: (stepTitle) => set({ stepTitle }),
+  setPrimaryColor: (color) => set({ primaryColor: color }),
   // Adds a new component to the canvas at a specific index
   addComponent: (index, type) => {
     const newComponent: FormComponent = {
       id: nanoid(), // Generate a unique ID
       type: type,
+      showLabel: type !== 'Label', // Labels don't show their own label
       props: {
         label: `New ${type}`,
-        placeholder: `Enter ${type.toLowerCase()}...`
+        placeholder: type === 'Input' ? `Enter ${type.toLowerCase()}...` : undefined,
+        buttonText: type === 'Button' ? 'Click me' : undefined,
+        checkboxText: type === 'Checkbox' ? 'Check me' : undefined,
+        switchText: type === 'Switch' ? 'Toggle me' : undefined,
+        labelText: type === 'Label' ? 'Label text' : undefined,
+        textareaRows: type === 'Textarea' ? 3 : undefined,
+        options: type === 'Select' ? ['Option 1', 'Option 2'] : undefined,
       },
     };
     set((state) => {
@@ -96,6 +116,17 @@ export const useFormStore = create<FormStore>((set) => ({
       components: state.components.map((component) =>
         component.id === id
           ? { ...component, props: { ...component.props, ...newProps } }
+          : component
+      ),
+    }));
+  },
+
+  // Updates component metadata (like showLabel, type, etc.)
+  updateComponentMeta: (id, newMeta) => {
+    set((state) => ({
+      components: state.components.map((component) =>
+        component.id === id
+          ? { ...component, ...newMeta }
           : component
       ),
     }));
