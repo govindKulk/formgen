@@ -3,6 +3,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { GripVertical, Trash2 } from 'lucide-react'
 import { useFormStore } from '@/store/form'
 import { Button } from './ui/button'
+import { useOutsideClick } from '@/hooks/use-outside-click'
 import React from 'react'
 
 function Draggable({
@@ -15,7 +16,7 @@ function Draggable({
     index: number
 }) {
 
-    const { removeComponent } = useFormStore();
+    const { removeComponent, activeComponentId, setActiveComponentId } = useFormStore();
     const { setNodeRef: setDragRef, listeners, attributes, isDragging, transform } = useDraggable({
         id: formComponentProps.id,
         data: { 
@@ -34,6 +35,14 @@ function Draggable({
         }
     });
 
+    // Hook to detect clicks outside this component
+    const outsideClickRef = useOutsideClick<HTMLDivElement>(() => {
+        // Only deactivate if this component is currently active
+        if (activeComponentId === formComponentProps.id) {
+            setActiveComponentId(undefined);
+        }
+    }, ['[data-properties-panel]']); // Exclude properties panel
+
     const style = transform ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
     } : undefined;
@@ -43,20 +52,28 @@ function Draggable({
         removeComponent(formComponentProps.id);
     };
 
-    // Combine both refs
+    const handleComponentClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        // Set this component as active when clicked
+        setActiveComponentId(formComponentProps.id);
+    };
+
+    // Combine all refs (drag, drop, and outside click detection)
     const setRefs = (element: HTMLDivElement | null) => {
         setDragRef(element);
         setDropRef(element);
+        outsideClickRef.current = element;
     };
 
     return (
         <div
             ref={setRefs}
             style={style}
-            className={`group relative p-4 border rounded-lg bg-background transition-all ${
+            onClick={handleComponentClick}
+            className={`group relative py-2 px-2 rounded-lg bg-background transition-all cursor-pointer ${
                 isDragging ? 'opacity-50 ring-2 ring-primary shadow-lg z-50' : 
-                isOver ? 'border-primary border-2 bg-primary/5' : 'hover:border-primary hover:shadow-md'
-            }`}
+                isOver ? 'border-primary border-2 bg-primary/5' : ''
+            } ${activeComponentId === formComponentProps.id ? 'shadow-[0_0_0_2px_rgba(0,0,255,0.5),_0_-1px_0_1px_rgba(0,0,255,0.5)]' : 'shadow-none'}`}
         >
 
 
@@ -80,12 +97,12 @@ function Draggable({
             </div>
 
             {/* Component label */}
-            <div className="text-xs text-muted-foreground mb-2">
+            {formComponentProps.showLabel && <div className="text-xs text-muted-foreground mb-2">
                 {formComponentProps.props?.label || `${formComponentProps.type} Component ${index}`}
-            </div>
+            </div>}
             
             {/* Component content */}
-            <div className="mt-2">
+            <div className={`${formComponentProps.showLabel ? 'mt-2' : ''}`}>
                 {children}
             </div>
         </div>

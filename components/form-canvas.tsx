@@ -30,7 +30,7 @@ const renderComponent = (component: FormComponent) => {
       return <Input
       placeholder={component.props?.placeholder} />;
     case 'Button':
-      return <Button>{component.props?.label}</Button>;
+      return <Button>{component.props.buttonText || "Button"}</Button>;
     case 'Checkbox':
       return (
         <div className="flex items-center space-x-2">
@@ -39,7 +39,7 @@ const renderComponent = (component: FormComponent) => {
         </div>
       );
     case 'Textarea':
-        return <Textarea placeholder={component.props?.placeholder} />;
+        return <Textarea placeholder={component.props?.placeholder}  />;
     case 'Select':
         return <Select><option>Default Option</option></Select>;
     case 'Switch':
@@ -57,19 +57,34 @@ const renderComponent = (component: FormComponent) => {
 };
 
 function FormCanvas() {
-    // Get the components array from our zustand store
-    const { components } = useFormStore();
+
+    const { components, title, setActiveComponentId } = useFormStore();
 
     const { isOver, setNodeRef } = useDroppable({
         id: "form-canvas",
     });
 
+    // Handle clicks on the canvas background to deactivate components
+    const handleCanvasClick = (e: React.MouseEvent) => {
+        // Only deactivate if clicking directly on the canvas (not on a child component)
+        if (e.target === e.currentTarget) {
+            setActiveComponentId(undefined);
+        }
+    };
+
     return (
         <main
             ref={setNodeRef}
-            className={`flex-1 p-8  rounded-lg border-2 border-dashed transition-colors
+            onClick={handleCanvasClick}
+            className={`flex-1 p-8  rounded-lg border-2 border-dashed max-w-lg mx-auto transition-colors
                         ${isOver ? 'border-primary bg-primary/10' : 'border-gray-300 bg-white'}`}
         >
+
+            <div>
+                <h2
+                className="text-2xl py-2 font-semibold"
+                >{title}</h2>
+            </div>
             {/* If there are no components, show a placeholder message */}
             {components.length === 0 && (
                 <div className="flex items-center justify-center h-full">
@@ -81,7 +96,7 @@ function FormCanvas() {
 
             {/* If there are components, map over them and render them */}
             {components.length > 0 && (
-                <div className="space-y-2">
+                <div className="">
                     <DropZone index={0} />
                     {components.map((component, index) => (
                         <React.Fragment key={component.id}>

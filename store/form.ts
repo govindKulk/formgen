@@ -7,6 +7,7 @@ export type FormComponentType = 'Input' | 'Button' | 'Checkbox' | 'Textarea' | '
 
 export interface FormComponent {
     id: string;
+    showLabel?: boolean;
     type: 'Input' | 'Textarea' | 'Button' | 'Checkbox' | 'Select' | 'Switch' | 'Label' | 'Card' | 'Dialog' | 'Tooltip';
     props: {
         label?: string;
@@ -14,6 +15,7 @@ export interface FormComponent {
         options?: string[];
         checked?: boolean;
         value?: string;
+        buttonText?: string;
     }
 }
 
@@ -22,6 +24,12 @@ export interface FormComponent {
 // Define the state and actions for your store
 interface FormStore {
   components: FormComponent[];
+  title: string;
+  activeComponentId?: string;
+  submissionMessage: string;
+  setSubmissionMessage: (message: string) => void;
+  setTitle: (title: string) => void;
+  setActiveComponentId: (id?: string) => void;
   addComponent: (index: number, type: FormComponentType) => void;
   removeComponent: (id: string) => void;
   moveComponent: (dragIndex: number, hoverIndex: number) => void;
@@ -31,7 +39,12 @@ interface FormStore {
 
 export const useFormStore = create<FormStore>((set) => ({
   components: [],
-
+  title: 'My Form',
+  activeComponentId: undefined,
+  submissionMessage: 'Form submitted successfully!',
+  setSubmissionMessage: (message) => set({ submissionMessage: message }),
+  setActiveComponentId: (id) => set({ activeComponentId: id }),
+  setTitle: (title) => set({ title }),
   // Adds a new component to the canvas at a specific index
   addComponent: (index, type) => {
     const newComponent: FormComponent = {

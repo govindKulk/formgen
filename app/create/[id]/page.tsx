@@ -9,6 +9,7 @@ import { useFormStore, FormComponentType } from '@/store/form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GripVertical } from 'lucide-react'
+import PropertiesPanel from '@/components/properties-panel'
 
 function CreateFormPage() {
     const {addComponent, components, moveComponent} = useFormStore();
@@ -131,9 +132,7 @@ function CreateFormPage() {
                 >
                     <FormCreateSidebar/>
                     <FormCanvas/>
-                    <div
-                    className="w-1/5 border-l border-gray-200 p-4 shadow-md "
-                    ></div>
+                    <PropertiesPanel/>
                 </div>
                 <DragOverlay>
                     {renderDragOverlay()}
