@@ -21,38 +21,44 @@ function CreateFormPage() {
     const handleDragEnd = (event: DragEndEvent) => {
         const {active, over} = event;
         setActiveItem(null);
-
-        if (!over) return;
-
+        if (!over) {
+            return;
+        };
+        
         const activeData = active.data.current;
         const overData = over.data.current;
 
+        
         // Handle dropping new component from sidebar to canvas
-        if (activeData?.type && typeof activeData.type === 'string' && over.id === 'form-canvas') {
+        if (activeData?.type && typeof activeData.type === 'string' && activeData.type != "canvas-item" && over.id === 'form-canvas') {
+            console.log("sidebar to canvas");
             const componentCount = components.length;
             addComponent(componentCount, activeData.type as FormComponentType);
             return;
         }
-
+        
         // Handle dropping new component from sidebar to drop zone
-        if (activeData?.type && typeof activeData.type === 'string' && overData?.type === 'drop-zone') {
+        if (activeData?.type && typeof activeData.type === 'string' && activeData.type != "canvas-item" && overData?.type === 'drop-zone') {
+            console.log("sidebar to drop zone");
             addComponent(overData.index, activeData.type as FormComponentType);
             return;
         }
-
+        
         // Handle reordering components within the canvas
         if (activeData?.type === 'canvas-item' && overData?.type === 'canvas-item') {
+            console.log("canvas to canvas");
             const activeIndex = activeData.index;
             const overIndex = overData.index;
-
+            
             if (activeIndex !== overIndex) {
                 moveComponent(activeIndex, overIndex);
             }
             return;
         }
-
+        
         // Handle dropping canvas item on drop zone
         if (activeData?.type === 'canvas-item' && overData?.type === 'drop-zone') {
+            console.log("canvas to drop  zone");
             const activeIndex = activeData.index;
             const newIndex = overData.index > activeIndex ? overData.index - 1 : overData.index;
             
@@ -121,10 +127,13 @@ function CreateFormPage() {
                 collisionDetection={closestCenter}
             >
                 <div
-                className='flex gap-4 w-full'
+                className='flex gap-4 w-full p-4'
                 >
                     <FormCreateSidebar/>
                     <FormCanvas/>
+                    <div
+                    className="w-1/5 border-l border-gray-200 p-4 shadow-md "
+                    ></div>
                 </div>
                 <DragOverlay>
                     {renderDragOverlay()}

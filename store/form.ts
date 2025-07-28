@@ -64,11 +64,14 @@ export const useFormStore = create<FormStore>((set) => ({
           dragIndex >= state.components.length || 
           hoverIndex >= state.components.length ||
           dragIndex === hoverIndex) {
+        console.log("drag-inddex", dragIndex, "hover-index", hoverIndex);
+        console.log(state.components);
         return state; // No change if indices are invalid or same
       }
 
       const newComponents = [...state.components];
       const [removed] = newComponents.splice(dragIndex, 1);
+      console.log(removed);
       newComponents.splice(hoverIndex, 0, removed);
       return { components: newComponents };
     });

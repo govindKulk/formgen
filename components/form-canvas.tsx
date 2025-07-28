@@ -28,7 +28,6 @@ const renderComponent = (component: FormComponent) => {
   switch (component.type) {
     case 'Input':
       return <Input
-      
       placeholder={component.props?.placeholder} />;
     case 'Button':
       return <Button>{component.props?.label}</Button>;
@@ -68,7 +67,7 @@ function FormCanvas() {
     return (
         <main
             ref={setNodeRef}
-            className={`flex-1 p-8 m-4 rounded-lg border-2 border-dashed transition-colors
+            className={`flex-1 p-8  rounded-lg border-2 border-dashed transition-colors
                         ${isOver ? 'border-primary bg-primary/10' : 'border-gray-300 bg-white'}`}
         >
             {/* If there are no components, show a placeholder message */}

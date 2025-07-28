@@ -58,6 +58,8 @@ function Draggable({
                 isOver ? 'border-primary border-2 bg-primary/5' : 'hover:border-primary hover:shadow-md'
             }`}
         >
+
+
             {/* Drag handle and controls */}
             <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
@@ -79,7 +81,7 @@ function Draggable({
 
             {/* Component label */}
             <div className="text-xs text-muted-foreground mb-2">
-                {formComponentProps.props?.label || `${formComponentProps.type} Component`}
+                {formComponentProps.props?.label || `${formComponentProps.type} Component ${index}`}
             </div>
             
             {/* Component content */}
