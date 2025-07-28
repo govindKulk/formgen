@@ -24,6 +24,7 @@ function SidebarItem({ type }: { type: FormComponentType }) {
 
     return (
         <Button
+            
             ref={setNodeRef}
             variant="outline"
             className={`w-full flex items-center gap-2 p-3 bg-gray-50 border rounded-lg dark:bg-gray-800 h-auto cursor-grab transition-all ${isDragging ? 'opacity-30 ring-2 ring-primary' : 'hover:shadow-md'}`}
@@ -33,7 +34,7 @@ function SidebarItem({ type }: { type: FormComponentType }) {
             <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <div className="flex flex-col gap-1 items-start flex-1">
                 <span className="text-sm font-medium">{type}</span>
-                <div className="w-full">
+                <div className="w-full flex justify-start">
                     {type === "Input" && <Input  
                     className="border border-neutral-500 h-8"
                     placeholder="Type here..." />}
@@ -43,7 +44,7 @@ function SidebarItem({ type }: { type: FormComponentType }) {
                     rows={2} />}
                     {type === "Button" && <Button 
                     size="sm" 
-                    className="pointer-events-none h-7 text-xs">
+                    className="pointer-events-none  h-7 text-xs">
                     Click me
                     </Button>}
                     {type === "Checkbox" && <div className="flex items-center gap-2">

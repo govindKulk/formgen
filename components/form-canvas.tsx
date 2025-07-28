@@ -3,7 +3,8 @@
 import { useDroppable } from '@dnd-kit/core';
 import React from 'react';
 import { useFormStore, FormComponent } from '@/store/form';
-import { Button, Input, Checkbox, Textarea, Select, Switch, Label } from '@/components/ui/form-fields'; // Assuming this path is correct
+import { Button, Input, Checkbox, Textarea, Switch, Label } from '@/components/ui/form-fields'; // Assuming this path is correct
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Draggable from './draggable';
 
 // Component to handle drop zones between components
@@ -27,50 +28,85 @@ function DropZone({ index }: { index: number }) {
 const renderComponent = (component: FormComponent) => {
   switch (component.type) {
     case 'Input':
-      return <Input
-      
-      placeholder={component.props?.placeholder} />;
+      return <Input placeholder={component.props?.placeholder || 'Enter text...'} />;
     case 'Button':
-      return <Button>{component.props?.label}</Button>;
+      return <Button>{component.props?.buttonText || component.props?.label || 'Button'}</Button>;
     case 'Checkbox':
       return (
         <div className="flex items-center space-x-2">
           <Checkbox id={component.id} />
-          <Label htmlFor={component.id}>{component.props?.label}</Label>
+          <Label htmlFor={component.id}>
+            {component.props?.checkboxText || component.props?.label || 'Checkbox'}
+          </Label>
         </div>
       );
     case 'Textarea':
-        return <Textarea placeholder={component.props?.placeholder} />;
+      return (
+        <Textarea 
+          placeholder={component.props?.placeholder || 'Enter text...'} 
+          rows={component.props?.textareaRows || 3}
+        />
+      );
     case 'Select':
-        return <Select><option>Default Option</option></Select>;
+      return (
+        <Select>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select an option..." />
+          </SelectTrigger>
+          <SelectContent>
+            {(component.props?.options || ['Option 1', 'Option 2']).map((option, index) => (
+              <SelectItem key={index} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
     case 'Switch':
-        return (
-            <div className="flex items-center space-x-2">
-                <Switch id={component.id} />
-                <Label htmlFor={component.id}>{component.props?.label}</Label>
-            </div>
-        );
+      return (
+        <div className="flex items-center space-x-2">
+          <Switch id={component.id} />
+          <Label htmlFor={component.id}>
+            {component.props?.switchText || component.props?.label || 'Switch'}
+          </Label>
+        </div>
+      );
     case 'Label':
-        return <Label>{component.props?.label}</Label>;
+      return <Label>{component.props?.labelText || component.props?.label || 'Label'}</Label>;
     default:
       return <div className='text-red-500'>Unknown Component</div>;
   }
 };
 
 function FormCanvas() {
-    // Get the components array from our zustand store
-    const { components } = useFormStore();
+
+    const { components, title, setActiveComponentId } = useFormStore();
 
     const { isOver, setNodeRef } = useDroppable({
         id: "form-canvas",
     });
 
+    // Handle clicks on the canvas background to deactivate components
+    const handleCanvasClick = (e: React.MouseEvent) => {
+        // Only deactivate if clicking directly on the canvas (not on a child component)
+        if (e.target === e.currentTarget) {
+            setActiveComponentId(undefined);
+        }
+    };
+
     return (
         <main
             ref={setNodeRef}
-            className={`flex-1 p-8 m-4 rounded-lg border-2 border-dashed transition-colors
+            onClick={handleCanvasClick}
+            className={`flex-1 p-8  rounded-lg border-2 border-dashed max-w-lg mx-auto transition-colors
                         ${isOver ? 'border-primary bg-primary/10' : 'border-gray-300 bg-white'}`}
         >
+
+            <div>
+                <h2
+                className="text-2xl py-2 font-semibold"
+                >{title}</h2>
+            </div>
             {/* If there are no components, show a placeholder message */}
             {components.length === 0 && (
                 <div className="flex items-center justify-center h-full">
@@ -82,7 +118,7 @@ function FormCanvas() {
 
             {/* If there are components, map over them and render them */}
             {components.length > 0 && (
-                <div className="space-y-2">
+                <div className="">
                     <DropZone index={0} />
                     {components.map((component, index) => (
                         <React.Fragment key={component.id}>
