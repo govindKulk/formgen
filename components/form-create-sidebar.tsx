@@ -42,11 +42,10 @@ function SidebarItem({ type }: { type: FormComponentType }) {
                     className="border border-neutral-500 rounded px-2 py-1 w-full resize-none text-xs"
                     placeholder="Type here..."
                     rows={2} />}
-                    {type === "Button" && <Button 
-                    size="sm" 
-                    className="pointer-events-none  h-7 text-xs">
+                    {type === "Button" && <div 
+                    className="pointer-events-none h-7 text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md inline-flex items-center justify-center whitespace-nowrap font-medium">
                     Click me
-                    </Button>}
+                    </div>}
                     {type === "Checkbox" && <div className="flex items-center gap-2">
                     <input type="checkbox" className="pointer-events-none" />
                     <span className="text-xs">Checkbox</span>

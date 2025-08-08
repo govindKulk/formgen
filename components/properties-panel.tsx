@@ -44,8 +44,8 @@ const FormProperties: React.FC = () => {
                         type="text"
                         id="form-step-title"
                         className="w-full p-1 text-sm border rounded"
-                        value={formStore.stepTitle}
-                        onChange={(e) => formStore.setStepTitle(e.target.value)}
+                        value={formStore.steps[formStore.currentStepIndex].stepTitle}
+                        onChange={(e) => formStore.setStepTitle(e.target.value, formStore.currentStepIndex)}
                     />
                 </div>
                 <div>
@@ -57,6 +57,39 @@ const FormProperties: React.FC = () => {
                         value={formStore.submissionMessage}
                         onChange={(e) => formStore.setSubmissionMessage(e.target.value)}
                     />
+                </div>
+                
+                {/* Current Step Info */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Current Step</label>
+                    <div className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                        <span className="text-sm text-gray-700">
+                            Step {formStore.currentStepIndex + 1} of {formStore.steps.length}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                            {formStore.steps[formStore.currentStepIndex]?.stepTitle}
+                        </span>
+                    </div>
+                    
+                    {/* Step Navigation Buttons */}
+                    {formStore.steps.length > 1 && (
+                        <div className="flex gap-2 mt-2">
+                            <button
+                                onClick={() => formStore.setCurrentStep(Math.max(0, formStore.currentStepIndex - 1))}
+                                disabled={formStore.currentStepIndex === 0}
+                                className="flex-1 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded"
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() => formStore.setCurrentStep(Math.min(formStore.steps.length - 1, formStore.currentStepIndex + 1))}
+                                disabled={formStore.currentStepIndex === formStore.steps.length - 1}
+                                className="flex-1 px-2 py-1 text-xs bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed rounded"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div>
                     <label htmlFor="primary-color" className="block text-sm font-medium mb-2">Primary Color</label>
@@ -108,6 +141,22 @@ const CommonProperties: React.FC<{
                 animate={{ opacity: show ? 1 : 0, height: show ? 'auto' : 0 }}
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
+                
+                {/* Required Field Toggle */}
+                {['Input', 'Textarea', 'Select', 'Checkbox'].includes(activeComponent.type) && (
+                    <div>
+                        <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                            <input
+                                type="checkbox"
+                                checked={activeComponent.required || false}
+                                onChange={(e) => updateComponentMeta(activeComponent.id, { required: e.target.checked })}
+                                className="rounded border-gray-300"
+                            />
+                            Required Field
+                        </label>
+                    </div>
+                )}
+
                 <div>
                     <label className="text-sm font-medium mb-2 flex justify-between items-center">
                     Label
@@ -160,7 +209,8 @@ const CommonProperties: React.FC<{
 const InputProperties: React.FC<{
     activeComponent: FormComponent,
     updateComponent: (id: string, props: Partial<FormComponent['props']>) => void,
-}> = ({ activeComponent, updateComponent }) => {
+    updateComponentMeta: (id: string, meta: Partial<Omit<FormComponent, 'props'>>) => void,
+}> = ({ activeComponent, updateComponent, updateComponentMeta }) => {
     const [show, setShow] = useState(true);
 
     return (
@@ -176,6 +226,24 @@ const InputProperties: React.FC<{
                 animate={{ opacity: show ? 1 : 0, height: show ? 'auto' : 0 }}
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
+                
+                {/* Input Type Selection */}
+                <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Input Type</label>
+                    <select
+                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={activeComponent.props?.inputType || 'text'}
+                        onChange={(e) => updateComponent(activeComponent.id, { inputType: e.target.value as any })}
+                    >
+                        <option value="text">Text</option>
+                        <option value="email">Email</option>
+                        <option value="password">Password</option>
+                        <option value="number">Number</option>
+                        <option value="tel">Phone</option>
+                        <option value="url">URL</option>
+                    </select>
+                </div>
+
                 <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">Placeholder Text</label>
                     <input
@@ -184,6 +252,77 @@ const InputProperties: React.FC<{
                         value={activeComponent.props?.placeholder || ''}
                         onChange={(e) => updateComponent(activeComponent.id, { placeholder: e.target.value })}
                     />
+                </div>
+
+                {/* Validation Options */}
+                <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Validation</label>
+                    <div className="space-y-3 border border-gray-200 rounded p-3">
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="block text-xs font-medium mb-1 text-gray-600">Min Length</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    value={activeComponent.validation?.minLength || ''}
+                                    onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                                        validation: { 
+                                            ...activeComponent.validation, 
+                                            minLength: e.target.value ? parseInt(e.target.value) : undefined 
+                                        } 
+                                    })}
+                                    placeholder="0"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium mb-1 text-gray-600">Max Length</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    value={activeComponent.validation?.maxLength || ''}
+                                    onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                                        validation: { 
+                                            ...activeComponent.validation, 
+                                            maxLength: e.target.value ? parseInt(e.target.value) : undefined 
+                                        } 
+                                    })}
+                                    placeholder="∞"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium mb-1 text-gray-600">Custom Pattern (RegEx)</label>
+                            <input
+                                type="text"
+                                className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                value={activeComponent.validation?.pattern || ''}
+                                onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                                    validation: { 
+                                        ...activeComponent.validation, 
+                                        pattern: e.target.value || undefined 
+                                    } 
+                                })}
+                                placeholder="^[A-Za-z]+$"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium mb-1 text-gray-600">Custom Error Message</label>
+                            <input
+                                type="text"
+                                className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                value={activeComponent.validation?.errorMessage || ''}
+                                onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                                    validation: { 
+                                        ...activeComponent.validation, 
+                                        errorMessage: e.target.value || undefined 
+                                    } 
+                                })}
+                                placeholder="Custom validation error message"
+                            />
+                        </div>
+                    </div>
                 </div>
             </motion.div>
         </div>
@@ -412,7 +551,8 @@ const LabelProperties: React.FC<{
 const TextareaProperties: React.FC<{
     activeComponent: FormComponent,
     updateComponent: (id: string, props: Partial<FormComponent['props']>) => void,
-}> = ({ activeComponent, updateComponent }) => {
+    updateComponentMeta: (id: string, meta: Partial<Omit<FormComponent, 'props'>>) => void,
+}> = ({ activeComponent, updateComponent, updateComponentMeta }) => {
     const [show, setShow] = useState(true);
 
     return (
@@ -448,16 +588,76 @@ const TextareaProperties: React.FC<{
                         onChange={(e) => updateComponent(activeComponent.id, { textareaRows: parseInt(e.target.value) || 3 })}
                     />
                 </div>
+
+                {/* Validation Options */}
+                <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Validation</label>
+                    <div className="space-y-3 border border-gray-200 rounded p-3">
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="block text-xs font-medium mb-1 text-gray-600">Min Length</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    value={activeComponent.validation?.minLength || ''}
+                                    onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                                        validation: { 
+                                            ...activeComponent.validation, 
+                                            minLength: e.target.value ? parseInt(e.target.value) : undefined 
+                                        } 
+                                    })}
+                                    placeholder="0"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium mb-1 text-gray-600">Max Length</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    value={activeComponent.validation?.maxLength || ''}
+                                    onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                                        validation: { 
+                                            ...activeComponent.validation, 
+                                            maxLength: e.target.value ? parseInt(e.target.value) : undefined 
+                                        } 
+                                    })}
+                                    placeholder="∞"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium mb-1 text-gray-600">Custom Error Message</label>
+                            <input
+                                type="text"
+                                className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                value={activeComponent.validation?.errorMessage || ''}
+                                onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                                    validation: { 
+                                        ...activeComponent.validation, 
+                                        errorMessage: e.target.value || undefined 
+                                    } 
+                                })}
+                                placeholder="Custom validation error message"
+                            />
+                        </div>
+                    </div>
+                </div>
             </motion.div>
         </div>
     );
 };
 
 // Helper function to render field-specific properties
-const renderFieldSpecificProperties = (activeComponent: FormComponent, updateComponent: (id: string, props: Partial<FormComponent['props']>) => void) => {
+const renderFieldSpecificProperties = (
+    activeComponent: FormComponent, 
+    updateComponent: (id: string, props: Partial<FormComponent['props']>) => void,
+    updateComponentMeta: (id: string, meta: Partial<Omit<FormComponent, 'props'>>) => void
+) => {
     switch (activeComponent.type) {
         case 'Input':
-            return <InputProperties activeComponent={activeComponent} updateComponent={updateComponent} />;
+            return <InputProperties activeComponent={activeComponent} updateComponent={updateComponent} updateComponentMeta={updateComponentMeta} />;
         case 'Select':
             return <SelectProperties activeComponent={activeComponent} updateComponent={updateComponent} />;
         case 'Button':
@@ -469,7 +669,7 @@ const renderFieldSpecificProperties = (activeComponent: FormComponent, updateCom
         case 'Label':
             return <LabelProperties activeComponent={activeComponent} updateComponent={updateComponent} />;
         case 'Textarea':
-            return <TextareaProperties activeComponent={activeComponent} updateComponent={updateComponent} />;
+            return <TextareaProperties activeComponent={activeComponent} updateComponent={updateComponent} updateComponentMeta={updateComponentMeta} />;
         default:
             return null;
     }
@@ -477,20 +677,23 @@ const renderFieldSpecificProperties = (activeComponent: FormComponent, updateCom
 
 function PropertiesPanel() {
     const {
-        components,
+        steps,
+        currentStepIndex,
         activeComponentId,
         updateComponent,
         updateComponentMeta,
-        removeComponent
+        removeComponent,
+        getCurrentStepComponents
     } = useFormStore();
 
-    // Find the active component
+    // Find the active component in the current step
+    const components = getCurrentStepComponents();
     const activeComponent = components.find(c => c.id === activeComponentId);
 
     return (
         <div
             data-properties-panel // Add this identifier
-            className="w-1/5 border-l border-gray-200 p-4 shadow-md bg-white flex flex-col space-y-6"
+            className="w-1/4 border-l border-gray-200 p-4 shadow-md bg-white flex flex-col space-y-6"
         >
 
 
@@ -503,7 +706,7 @@ function PropertiesPanel() {
                 updateComponent={updateComponent}
                 updateComponentMeta={updateComponentMeta}
                 removeComponent={removeComponent} />
-            {activeComponent && renderFieldSpecificProperties(activeComponent, updateComponent)}
+            {activeComponent && renderFieldSpecificProperties(activeComponent, updateComponent, updateComponentMeta)}
         </div>
     )
 }
