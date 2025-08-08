@@ -44,8 +44,8 @@ const FormProperties: React.FC = () => {
                         type="text"
                         id="form-step-title"
                         className="w-full p-1 text-sm border rounded"
-                        value={formStore.stepTitle}
-                        onChange={(e) => formStore.setStepTitle(e.target.value)}
+                        value={formStore.steps[formStore.currentStepIndex].stepTitle}
+                        onChange={(e) => formStore.setStepTitle(e.target.value, formStore.currentStepIndex)}
                     />
                 </div>
                 <div>
@@ -57,6 +57,39 @@ const FormProperties: React.FC = () => {
                         value={formStore.submissionMessage}
                         onChange={(e) => formStore.setSubmissionMessage(e.target.value)}
                     />
+                </div>
+                
+                {/* Current Step Info */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Current Step</label>
+                    <div className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                        <span className="text-sm text-gray-700">
+                            Step {formStore.currentStepIndex + 1} of {formStore.steps.length}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                            {formStore.steps[formStore.currentStepIndex]?.stepTitle}
+                        </span>
+                    </div>
+                    
+                    {/* Step Navigation Buttons */}
+                    {formStore.steps.length > 1 && (
+                        <div className="flex gap-2 mt-2">
+                            <button
+                                onClick={() => formStore.setCurrentStep(Math.max(0, formStore.currentStepIndex - 1))}
+                                disabled={formStore.currentStepIndex === 0}
+                                className="flex-1 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded"
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() => formStore.setCurrentStep(Math.min(formStore.steps.length - 1, formStore.currentStepIndex + 1))}
+                                disabled={formStore.currentStepIndex === formStore.steps.length - 1}
+                                className="flex-1 px-2 py-1 text-xs bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed rounded"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div>
                     <label htmlFor="primary-color" className="block text-sm font-medium mb-2">Primary Color</label>
@@ -477,14 +510,17 @@ const renderFieldSpecificProperties = (activeComponent: FormComponent, updateCom
 
 function PropertiesPanel() {
     const {
-        components,
+        steps,
+        currentStepIndex,
         activeComponentId,
         updateComponent,
         updateComponentMeta,
-        removeComponent
+        removeComponent,
+        getCurrentStepComponents
     } = useFormStore();
 
-    // Find the active component
+    // Find the active component in the current step
+    const components = getCurrentStepComponents();
     const activeComponent = components.find(c => c.id === activeComponentId);
 
     return (

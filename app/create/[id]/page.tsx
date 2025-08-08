@@ -12,7 +12,7 @@ import { GripVertical } from 'lucide-react'
 import PropertiesPanel from '@/components/properties-panel'
 
 function CreateFormPage() {
-    const {addComponent, components, moveComponent} = useFormStore();
+    const {addComponent, steps, currentStepIndex, moveComponent} = useFormStore();
     const [activeItem, setActiveItem] = useState<Active | null>(null);
     
     const handleDragStart = (event: DragStartEvent) => {
@@ -33,7 +33,7 @@ function CreateFormPage() {
         // Handle dropping new component from sidebar to canvas
         if (activeData?.type && typeof activeData.type === 'string' && activeData.type != "canvas-item" && over.id === 'form-canvas') {
             console.log("sidebar to canvas");
-            const componentCount = components.length;
+            const componentCount = steps[currentStepIndex].components.length;
             addComponent(componentCount, activeData.type as FormComponentType);
             return;
         }
@@ -128,7 +128,7 @@ function CreateFormPage() {
                 collisionDetection={closestCenter}
             >
                 <div
-                className='flex gap-4 w-full p-4'
+                className='flex gap-4 w-full p-4 '
                 >
                     <FormCreateSidebar/>
                     <FormCanvas/>

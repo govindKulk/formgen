@@ -3,9 +3,12 @@
 import { useDroppable } from '@dnd-kit/core';
 import React from 'react';
 import { useFormStore, FormComponent } from '@/store/form';
-import { Button, Input, Checkbox, Textarea, Switch, Label } from '@/components/ui/form-fields'; // Assuming this path is correct
+import { Button, Input, Checkbox, Textarea, Switch, Label } from '@/components/ui/form-fields';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Draggable from './draggable';
+import { StepNavigation } from './step-navigation';
+import { PlusIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Component to handle drop zones between components
 function DropZone({ index }: { index: number }) {
@@ -79,8 +82,31 @@ const renderComponent = (component: FormComponent) => {
 };
 
 function FormCanvas() {
+    const { 
+        steps, 
+        currentStepIndex, 
+        title, 
+        setActiveComponentId, 
+        addStep,
+        getCurrentStepComponents 
+    } = useFormStore();
 
-    const { components, title, setActiveComponentId } = useFormStore();
+    const previousStepIndexRef = React.useRef(currentStepIndex);
+    const [animationDirection, setAnimationDirection] = React.useState<'forward' | 'backward' | 'none'>('none');
+    const currentStep = steps[currentStepIndex];
+    const components = getCurrentStepComponents();
+
+    // Calculate and store direction in state for immediate use
+    React.useEffect(() => {
+        // if (currentStepIndex > previousStepIndexRef.current) {
+        //     setAnimationDirection('forward');
+        // } else if (currentStepIndex < previousStepIndexRef.current) {
+        //     setAnimationDirection('backward');
+        // } else {
+        //     setAnimationDirection('none');
+        // }
+        previousStepIndexRef.current = currentStepIndex;
+    }, [currentStepIndex]);
 
     const { isOver, setNodeRef } = useDroppable({
         id: "form-canvas",
@@ -94,46 +120,112 @@ function FormCanvas() {
         }
     };
 
+    const handleAddStep = () => {
+        addStep();
+    };
+    const isMovingForward = currentStepIndex > previousStepIndexRef.current;
+
+    console.log("Current Step Index:", currentStepIndex, "Previous Step Index:", previousStepIndexRef.current, "Direction:", animationDirection);
+    
+    // Animation variants based on direction
+    const getAnimationProps = () => {
+        if (isMovingForward) {
+            return {
+                initial: { x: '100%', opacity: 0 },
+                exit: { x: '-100%', opacity: 0 }
+            };
+        } else {
+            return {
+                initial: { x: '-100%', opacity: 0 },
+                exit: { x: '100%', opacity: 0 }
+            };
+        }
+    };
+
+    const animationProps = getAnimationProps();
+    
     return (
-        <main
-            ref={setNodeRef}
-            onClick={handleCanvasClick}
-            className={`flex-1 p-8  rounded-lg border-2 border-dashed max-w-lg mx-auto transition-colors
-                        ${isOver ? 'border-primary bg-primary/10' : 'border-gray-300 bg-white'}`}
-        >
+        <div className='h-fit w-full relative flex flex-col'>
+            {/* Step Container with Sliding Animation */}
 
-            <div>
-                <h2
-                className="text-2xl py-2 font-semibold"
-                >{title}</h2>
+            <div className="relative overflow-hidden">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentStepIndex}
+                        initial={animationProps.initial}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={animationProps.exit}
+                        transition={{
+                            type: "tween",
+                            ease: "easeInOut",
+                            duration: 0.3
+                        }}
+                        className="w-full"
+                    >
+                        <main
+                            ref={setNodeRef}
+                            onClick={handleCanvasClick}
+                            className={`flex-1 p-8 rounded-lg border-2 border-dashed max-w-lg mx-auto transition-colors h-fit min-h-[600px] relative
+                                        ${isOver ? 'border-primary bg-primary/10' : 'border-gray-300 bg-white'}`}
+                        >
+                            <div>
+                                <h2 className="text-2xl py-2 font-semibold">
+                                    {title}
+                                </h2>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    {currentStep?.stepTitle} ({currentStepIndex + 1} of {steps.length})
+                                </p>
+                            </div>
+
+                            {/* If there are no components, show a placeholder message */}
+                            {components.length === 0 && (
+                                <div className="flex items-center justify-center h-full w-full absolute top-0 left-0">
+                                    <p className="text-center text-muted-foreground">
+                                        Drag and drop form elements here
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* If there are components, map over them and render them */}
+                            {components.length > 0 && (
+                                <div className="">
+                                    <DropZone index={0} />
+                                    {components.map((component: FormComponent, index: number) => (
+                                        <React.Fragment key={component.id}>
+                                            <Draggable 
+                                                formComponentProps={component}
+                                                index={index}
+                                            >
+                                                {renderComponent(component)}
+                                            </Draggable>
+                                            <DropZone index={index + 1} />
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            )}
+                        </main>
+                    </motion.div>
+                </AnimatePresence>
             </div>
-            {/* If there are no components, show a placeholder message */}
-            {components.length === 0 && (
-                <div className="flex items-center justify-center h-full">
-                    <p className="text-center text-muted-foreground">
-                        Drag and drop form elements here
-                    </p>
-                </div>
-            )}
 
-            {/* If there are components, map over them and render them */}
-            {components.length > 0 && (
-                <div className="">
-                    <DropZone index={0} />
-                    {components.map((component, index) => (
-                        <React.Fragment key={component.id}>
-                            <Draggable 
-                                formComponentProps={component}
-                                index={index}
-                            >
-                                {renderComponent(component)}
-                            </Draggable>
-                            <DropZone index={index + 1} />
-                        </React.Fragment>
-                    ))}
-                </div>
-            )}
-        </main>
+            {/* Step Navigation */}
+            <div className="mt-6 px-8">
+                <StepNavigation />
+            </div>
+
+            {/* Add Step Button */}
+            <motion.button
+                onClick={handleAddStep}
+                whileHover={{
+                    opacity: 0.8,
+                    scale: 0.95,
+                }}
+                className='bg-blue-600 group flex gap-1 items-center text-white font-bold py-2 px-4 rounded-2xl shadow-lg absolute -bottom-12 right-0 text-sm hover:bg-blue-600/50 hover:text-black hover:shadow-md transition-all cursor-pointer overflow-hidden'
+            >
+                Add Step
+                <PlusIcon className="h-4 w-4 ml-2" />
+            </motion.button>
+        </div>
     );
 }
 
