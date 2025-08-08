@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import {nanoid} from 'nanoid';
+import { Component } from 'lucide-react';
 
 
 export type FormComponentType = 'Input' | 'Button' | 'Checkbox' | 'Textarea' | 'Select' | 'Switch' | 'Label' | 'Dialog' | 'Tooltip';
@@ -15,6 +16,13 @@ export interface FormComponent {
     id: string;
     showLabel?: boolean;
     type: 'Input' | 'Textarea' | 'Button' | 'Checkbox' | 'Select' | 'Switch' | 'Label' | 'Card' | 'Dialog' | 'Tooltip';
+    required?: boolean;
+    validation?: {
+        minLength?: number;
+        maxLength?: number;
+        pattern?: string;
+        errorMessage?: string;
+    };
     props: {
         label?: string;
         placeholder?: string;
@@ -26,6 +34,7 @@ export interface FormComponent {
         switchText?: string;
         labelText?: string;
         textareaRows?: number;
+        inputType?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
     }
 }
 
@@ -39,6 +48,8 @@ interface FormStore {
   primaryColor: string;
   activeComponentId?: string;
   submissionMessage: string;
+  formData: Record<string, any>;
+  currentStepValid: boolean;
   setSubmissionMessage: (message: string) => void;
   setTitle: (title: string) => void;
   setStepTitle: (stepTitle: string, currentStepIndex: number) => void,
@@ -54,6 +65,12 @@ interface FormStore {
   removeStep: (stepId: string) => void;
   setCurrentStep: (index: number) => void;
   updateStepTitle: (stepId: string, title: string) => void;
+  setFormData: (data: Record<string, any>) => void;
+  updateFormField: (fieldName: string, value: any) => void;
+  setCurrentStepValidation: (isValid: boolean) => void;
+  canNavigateToNextStep: () => boolean;
+  canNavigateToPrevStep: () => boolean;
+  getRequiredFieldsForCurrentStep: () => FormComponent[];
   // Helper getter for current step components
   getCurrentStepComponents: () => FormComponent[];
 }
@@ -73,10 +90,52 @@ export const useFormStore = create<FormStore>((set, get) => ({
   primaryColor: '#3b82f6',
   activeComponentId: undefined,
   submissionMessage: 'Form submitted successfully!',
+  formData: {},
+  currentStepValid: true,
+
   setSubmissionMessage: (message) => set({ submissionMessage: message }),
   setActiveComponentId: (id) => set({ activeComponentId: id }),
   setTitle: (title) => set({ title }),
   setPrimaryColor: (color) => set({ primaryColor: color }),
+
+  // Form data management
+  setFormData: (data) => set({ formData: data }),
+  updateFormField: (fieldName, value) => {
+    set((state) => ({
+      formData: { ...state.formData, [fieldName]: value }
+    }));
+  },
+  setCurrentStepValidation: (isValid) => set({ currentStepValid: isValid }),
+
+  // Navigation validation
+  canNavigateToNextStep: () => {
+    const state = get();
+    const requiredFields = state.getRequiredFieldsForCurrentStep();
+    const isSelected =  requiredFields.every(component => {
+      const fieldValue = state.formData[component.id];
+      if (component.type === 'Checkbox') {
+        return !component.required || fieldValue === true;
+      }
+      return !component.required || (fieldValue !== undefined && fieldValue !== null && fieldValue !== '');
+    });
+
+    // Include React Hook Form validation state
+    return isSelected && state.currentStepValid;
+  },
+
+  canNavigateToPrevStep: () => {
+    const state = get();
+    return state.currentStepIndex > 0;
+  },
+
+  getRequiredFieldsForCurrentStep: () => {
+    const state = get();
+    const currentComponents = state.getCurrentStepComponents();
+    return currentComponents.filter(component => 
+      component.required && 
+      ['Input', 'Textarea', 'Select', 'Checkbox'].includes(component.type)
+    );
+  },
 
   // Helper getter for current step components
   getCurrentStepComponents: () => {
@@ -96,6 +155,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
       id: nanoid(),
       type: type,
       showLabel: type !== 'Label',
+      required: false,
+      validation: {},
       props: {
         label: `New ${type}`,
         placeholder: type === 'Input' ? `Enter ${type.toLowerCase()}...` : undefined,
@@ -105,6 +166,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
         labelText: type === 'Label' ? 'Label text' : undefined,
         textareaRows: type === 'Textarea' ? 3 : undefined,
         options: type === 'Select' ? ['Option 1', 'Option 2'] : undefined,
+        inputType: type === 'Input' ? 'text' : undefined,
       },
     };
     set((state) => {
