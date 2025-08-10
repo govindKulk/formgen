@@ -40,8 +40,8 @@ export default function Home() {
                 asChild
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-medium transition-all duration-200 transform hover:scale-105"
               >
-                <Link href="/create">
-                  Try Now
+                <Link href="/forms">
+                  Dashboard
                 </Link>
               </Button>
             </div>
@@ -68,7 +68,7 @@ export default function Home() {
                 size="lg"
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                <Link href="/create" className="flex items-center gap-2">
+                <Link href="/forms" className="flex items-center gap-2">
                   Start Building Forms
                   <ArrowRight className="w-5 h-5" />
                 </Link>

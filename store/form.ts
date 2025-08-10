@@ -73,6 +73,8 @@ interface FormStore {
   getRequiredFieldsForCurrentStep: () => FormComponent[];
   // Helper getter for current step components
   getCurrentStepComponents: () => FormComponent[];
+  // Load complete form state (for loading from database)
+  loadFormState: (state: Partial<FormStore>) => void;
 }
 
 export const useFormStore = create<FormStore>((set, get) => ({
@@ -305,6 +307,14 @@ export const useFormStore = create<FormStore>((set, get) => ({
       steps: state.steps.map(step =>
         step.id === stepId ? { ...step, title } : step
       )
+    }));
+  },
+
+  // Load complete form state from database
+  loadFormState: (newState) => {
+    set((state) => ({
+      ...state,
+      ...newState,
     }));
   },
 }));
