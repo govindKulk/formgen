@@ -6,10 +6,12 @@ import { FormUpdateData, databaseToStore } from '@/lib/types/form';
 // GET /api/forms/[id] - Get a specific form
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId: clerkUserId } = await auth();
+
+    const {id} = await params;
     
     if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -27,7 +29,7 @@ export async function GET(
 
     const form = await prisma.form.findFirst({
       where: { 
-        id: params.id,
+        id,
         userId: dbUser.id, // Use internal user ID
       },
     });
@@ -55,10 +57,12 @@ export async function GET(
 // PUT /api/forms/[id] - Update a specific form
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId: clerkUserId } = await auth();
+
+    const {id} = await params;
     
     if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -79,7 +83,7 @@ export async function PUT(
     // Verify the form belongs to the user
     const existingForm = await prisma.form.findFirst({
       where: { 
-        id: params.id,
+        id,
         userId: dbUser.id, // Use internal user ID
       },
     });
@@ -106,7 +110,7 @@ export async function PUT(
     }
 
     const updatedForm = await prisma.form.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     });
 
@@ -123,10 +127,12 @@ export async function PUT(
 // DELETE /api/forms/[id] - Delete a specific form
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId: clerkUserId } = await auth();
+
+    const {id} = await params;
     
     if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -145,7 +151,7 @@ export async function DELETE(
     // Verify the form belongs to the user
     const existingForm = await prisma.form.findFirst({
       where: { 
-        id: params.id,
+        id,
         userId: dbUser.id, // Use internal user ID
       },
     });
@@ -155,7 +161,7 @@ export async function DELETE(
     }
 
     await prisma.form.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });
