@@ -6,14 +6,22 @@ import { FormCreateData, storeToDatabase } from '@/lib/types/form';
 // POST /api/forms - Create a new form
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const { userId: clerkUserId } = await auth();
     
-    if (!userId) {
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body: FormCreateData = await request.json();
 
+    const dbUser = await prisma.user.findUnique({
+        where: { clerkUserId },
+        select: { id: true },
+    })
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
 
     const form = await prisma.form.create({
       data: {
@@ -24,7 +32,7 @@ export async function POST(request: NextRequest) {
         content: JSON.parse(JSON.stringify(body.content)), 
         published: body.published || false,
         acceptsAnonymousResponses: body.acceptsAnonymousResponses || false,
-        userId,
+        userId: dbUser.id,
       },
     });
 
@@ -41,14 +49,24 @@ export async function POST(request: NextRequest) {
 // GET /api/forms - Get all forms for the current user
 export async function GET() {
   try {
-    const { userId } = await auth();
+    const { userId: clerkUserId } = await auth();
     
-    if (!userId) {
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get the internal user ID from clerkUserId
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkUserId },
+      select: { id: true },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const forms = await prisma.form.findMany({
-      where: { userId },
+      where: { userId: dbUser.id }, // Use internal user ID
       select: {
         id: true,
         description: true,

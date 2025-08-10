@@ -9,16 +9,26 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId: clerkUserId } = await auth();
     
-    if (!userId) {
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get the internal user ID from clerkUserId
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkUserId },
+      select: { id: true },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const form = await prisma.form.findFirst({
       where: { 
         id: params.id,
-        userId, 
+        userId: dbUser.id, // Use internal user ID
       },
     });
 
@@ -48,10 +58,20 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId: clerkUserId } = await auth();
     
-    if (!userId) {
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get the internal user ID from clerkUserId
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkUserId },
+      select: { id: true },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const body: Partial<FormUpdateData> = await request.json();
@@ -60,7 +80,7 @@ export async function PUT(
     const existingForm = await prisma.form.findFirst({
       where: { 
         id: params.id,
-        userId,
+        userId: dbUser.id, // Use internal user ID
       },
     });
 
@@ -106,17 +126,27 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId: clerkUserId } = await auth();
     
-    if (!userId) {
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get the internal user ID from clerkUserId
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkUserId },
+      select: { id: true },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Verify the form belongs to the user
     const existingForm = await prisma.form.findFirst({
       where: { 
         id: params.id,
-        userId,
+        userId: dbUser.id, // Use internal user ID
       },
     });
 
