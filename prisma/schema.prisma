@@ -75,7 +75,8 @@ model FormResponse {
   responderLocation String?
 
   user        User? @relation(fields: [responderId], references: [id], onDelete: SetNull)
-  content       Json
+  content       Json @default("{}")
+  
   
   formId        String
   form          Form @relation(fields: [formId], references: [id], onDelete: Cascade)

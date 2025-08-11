@@ -1,19 +1,17 @@
-import PrismaClient from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
+// Type the global object to avoid polluting the global namespace
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-
-declare global {
-   var prisma : PrismaClient.PrismaClient | undefined;
-}
-
-const prisma = global.prisma || new PrismaClient.PrismaClient({
+const prisma = globalForPrisma.prisma || new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma;
+  globalForPrisma.prisma = prisma;
 }
-
 
 export default prisma;
 
