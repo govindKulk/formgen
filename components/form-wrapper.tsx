@@ -232,6 +232,7 @@ export function FormWrapper({ children, onSubmit, className = "" }: FormWrapperP
     const isLastStep = currentStepIndex === steps.length - 1;
     
     if (isLastStep) {
+      console.log("submittin from formwrapper");
       // Final submission - use transformed data with meaningful field names
       onSubmit?.(transformedData);
     }

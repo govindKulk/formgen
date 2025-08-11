@@ -75,6 +75,8 @@ interface FormStore {
   getCurrentStepComponents: () => FormComponent[];
   // Load complete form state (for loading from database)
   loadFormState: (state: Partial<FormStore>) => void;
+  // Reset form data for public forms
+  resetFormData: () => void;
 }
 
 export const useFormStore = create<FormStore>((set, get) => ({
@@ -315,6 +317,13 @@ export const useFormStore = create<FormStore>((set, get) => ({
     set((state) => ({
       ...state,
       ...newState,
+      // Reset formData when loading a new form to avoid contamination
+      formData: newState.formData || {},
     }));
+  },
+
+  // Reset form data for public forms
+  resetFormData: () => {
+    set({ formData: {} });
   },
 }));
