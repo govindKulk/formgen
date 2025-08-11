@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Specifies the data source provider and the connection URL from your .env file.
+// Make sure your DATABASE_URL in .env is correctly set up for your database (e.g., PostgreSQL, MySQL).
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Specifies the generator to be used. `prisma-client-js` is the default for generating the Prisma Client for TypeScript/JavaScript.
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User Model
+// This model stores a reference to your users.
+// The actual user authentication and profile data (email, password, etc.) is handled by Clerk.
+model User {
+  id            String @id @default(cuid())
+  clerkUserId   String @unique
+  email         String @unique
+  name          String?
+  image        String?
+  phone        String?
+  firstName    String?
+  lastName     String?
+
+  forms         Form[]
+  responses    FormResponse[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Form Model
+// This model represents a single form created by a user.
+model Form {
+  id            String @id @default(cuid())
+  description   String? @default("")
+
+  title         String @default("My Form")
+  primaryColor  String @default("#3b82f6")
+  submissionMessage String @default("Form submitted successfully!")
+  
+  content       Json @default("{\"steps\":[{\"id\":\"\",\"stepTitle\":\"First Step\",\"components\":[]}],\"currentStepIndex\":0,\"formData\":{}}")
+  
+  published     Boolean @default(false)
+  
+  visits        Int @default(0)
+  submissions   Int @default(0)
+  
+  shareUrl      String @unique @default(cuid())
+  
+  userId        String
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  responses     FormResponse[]
+
+  acceptsAnonymousResponses Boolean @default(false)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// FormResponse Model
+// This model represents a single submission for a specific form.
+model FormResponse {
+  id            String @id @default(cuid())
+  responderId   String?
+  responderName String?
+  responderEmail String?
+  responderIp  String?
+  responderUserAgent String?
+  responderLocation String?
+
+  user        User? @relation(fields: [responderId], references: [id], onDelete: SetNull)
+  content       Json
+  
+  formId        String
+  form          Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+}
