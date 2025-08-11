@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useFormStore } from '@/store/form';
-import { FormCreateData, FormUpdateData, storeToDatabase } from '@/lib/types/form';
+import { FormCreateData, FormResponseData, FormUpdateData, storeToDatabase } from '@/lib/types/form';
+import { FormResponse } from '@prisma/client';
 
 interface UseFormApiProps {
   onSuccess?: (message: string) => void;
@@ -172,6 +173,80 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
     }
   }, [onSuccess, onError]);
 
+  // load form for the public users
+  const loadPublicForm = useCallback(async (formId: string) =>{
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/forms/public/${formId}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to load form');
+      }
+
+      const form = await response.json();
+      
+      // Update the form store with loaded data
+      const { content } = form;
+      
+      console.log('Loading public form content:', content); // Debug log
+      
+      // Reset form data first to ensure clean state
+      formState.resetFormData();
+      
+      // Load complete state into store
+      formState.loadFormState({
+        steps: content.steps,
+        currentStepIndex: 0, // Always start from first step for public forms
+        title: content.title,
+        primaryColor: content.primaryColor,
+        submissionMessage: content.submissionMessage,
+        formData: {}, // Start with empty form data for public forms
+      });
+      
+      const message = 'Form loaded successfully';
+      onSuccess?.(message);
+      return form;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to load form';
+      onError?.(message);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [formState, onSuccess, onError]);
+
+  const submitResponse = useCallback(async (formId: string, responseData: Record<string, any>) => {
+    setIsSaving(true);
+    try {
+      if (!formId) {
+        throw new Error("Form ID is required");
+      }
+
+      console.log('Submitting response:', { formId, responseData });
+
+      const response = await fetch(`/api/forms/public/${formId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: responseData }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to submit form response');
+      }
+
+      const result = await response.json();
+      onSuccess?.('Form submitted successfully!');
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to submit form response';
+      onError?.(message);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  }, [onSuccess, onError])
+
   return {
     isLoading,
     isSaving,
@@ -180,5 +255,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
     getForms,
     deleteForm,
     togglePublish,
+    loadPublicForm,
+    submitResponse
   };
 }
