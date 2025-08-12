@@ -77,6 +77,7 @@ interface FormStore {
   loadFormState: (state: Partial<FormStore>) => void;
   // Reset form data for public forms
   resetFormData: () => void;
+  getAllComponents: () => FormComponent[];
 }
 
 export const useFormStore = create<FormStore>((set, get) => ({
@@ -155,6 +156,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
   // Adds a new component to the current step at a specific index
   addComponent: (index, type) => {
+
+    const sameTypeLabels = get().getAllComponents().filter(c => c.type === type);
     const newComponent: FormComponent = {
       id: nanoid(),
       type: type,
@@ -162,7 +165,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
       required: false,
       validation: {},
       props: {
-        label: `New ${type}`,
+        label: `New ${type + ' ' + sameTypeLabels.length}`,
         placeholder: type === 'Input' ? `Enter ${type.toLowerCase()}...` : undefined,
         buttonText: type === 'Button' ? 'Click me' : undefined,
         checkboxText: type === 'Checkbox' ? 'Check me' : undefined,
@@ -326,4 +329,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
   resetFormData: () => {
     set({ formData: {} });
   },
+
+  getAllComponents: () => {
+    return get().steps.flatMap(step => step.components);
+  }
 }));
