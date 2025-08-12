@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import { databaseToStore } from "@/lib/types/form";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { trackUniqueVisitor } from "@/lib/visitor-tracking";
 
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -23,6 +24,46 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             console.error("Form not found for ID:", id);
             return NextResponse.json({ error: 'Form not found' }, { status: 404 });
         }
+
+        // Track unique visitors by IP with comprehensive fallback strategy and email support
+        const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                        request.headers.get('x-real-ip') || 
+                        'unknown';
+        
+        const userAgent = request.headers.get('user-agent') || '';
+
+        // Check if user is authenticated and get their email
+        let visitorEmail: string | undefined;
+        try {
+            const { userId } = await auth();
+            if (userId) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { clerkUserId: userId },
+                    select: { email: true }
+                });
+                visitorEmail = dbUser?.email || undefined;
+            }
+        } catch (error) {
+            // Auth failed or user not logged in - this is fine for public forms
+            console.log('User not authenticated for form visit (this is normal for public forms)');
+        }
+
+        console.log('Tracking visitor:', { 
+            formId: form.id, 
+            clientIp, 
+            userAgent: userAgent.substring(0, 100),
+            hasEmail: !!visitorEmail
+        });
+
+        // Track visitor using comprehensive strategy (Redis > Database > Memory > None)
+        try {
+            const trackingResult = await trackUniqueVisitor(form.id, clientIp, userAgent, visitorEmail);
+            console.log('Visitor tracking result:', trackingResult);
+        } catch (error) {
+            console.error('Visitor tracking error:', error);
+            // Continue serving the form even if tracking fails
+        }
+
 
         const formWithParsedContent = {
             ...form,

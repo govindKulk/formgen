@@ -56,6 +56,7 @@ model Form {
   user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   responses     FormResponse[]
+  visitRecords  FormVisit[] @relation("FormVisitRecords")
 
   acceptsAnonymousResponses Boolean @default(false)
   
@@ -82,4 +83,19 @@ model FormResponse {
   form          Form @relation(fields: [formId], references: [id], onDelete: Cascade)
   
   createdAt     DateTime @default(now())
+}
+
+// FormVisit Model
+// This model tracks unique visitors to forms for analytics
+model FormVisit {
+  id        String @id @default(cuid())
+  formId    String
+  form      Form @relation("FormVisitRecords", fields: [formId], references: [id], onDelete: Cascade)
+  
+  visitorIp String
+  visitorEmail String? // Optional: for logged-in users to track unique visits per user
+  userAgent String?
+  visitedAt DateTime @default(now())
+  
+  @@index([formId, visitorIp, visitorEmail, visitedAt])
 }
