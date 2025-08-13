@@ -10,7 +10,8 @@ import {
   FormCheckbox, 
   FormSwitch, 
   FormButton, 
-  FormLabel 
+  FormLabel,
+  FormMCQ
 } from '@/components/form-fields-enhanced';
 import React from 'react';
 
@@ -32,6 +33,8 @@ const renderComponent = (component: FormComponent, isPreviewMode: boolean = fals
         return <FormButton component={component} />;
       case 'Label':
         return <FormLabel component={component} />;
+      case 'MCQ':
+        return <FormMCQ component={component} />;
       default:
         return <div className='text-red-500'>Unknown Component</div>;
     }
@@ -85,6 +88,29 @@ const renderComponent = (component: FormComponent, isPreviewMode: boolean = fals
       );
     case 'Label':
       return <Label>{component.props?.labelText || component.props?.label || 'Label'}</Label>;
+    case 'MCQ':
+      return (
+        <div className="space-y-3">
+          <Label className="text-base font-medium">
+            {component.props?.label || 'Multiple Choice Question'}
+          </Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {(component.props?.options || ['Option A', 'Option B', 'Option C', 'Option D']).map((option, index) => (
+              <div
+                key={index}
+                className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg"
+              >
+                <div className={`w-4 h-4 border-2 border-gray-300 ${
+                  component.quiz?.isMultipleChoice ? 'rounded-sm' : 'rounded-full'
+                }`}></div>
+                <span className="text-sm font-medium text-gray-700">
+                  {option}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
     default:
       return <div className='text-red-500'>Unknown Component</div>;
   }

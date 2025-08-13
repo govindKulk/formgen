@@ -186,3 +186,84 @@ export function FormLabel({ component, className = '' }: FormFieldProps) {
         </Label>
     );
 }
+
+export function FormMCQ({ component, className = '' }: FormFieldProps) {
+    const { control, formState: { errors } } = useFormContext();
+    const { field } = useController({
+        name: component.id,
+        control,
+        defaultValue: component.quiz?.isMultipleChoice ? [] : ''
+    });
+
+    const error = errors[component.id]?.message as string;
+    const options = component.props.options || ['Option A', 'Option B', 'Option C', 'Option D'];
+    const isMultipleChoice = component.quiz?.isMultipleChoice || false;
+
+    const handleOptionChange = (optionValue: string) => {
+        if (isMultipleChoice) {
+            const currentValue = field.value || [];
+            const newValue = currentValue.includes(optionValue)
+                ? currentValue.filter((v: string) => v !== optionValue)
+                : [...currentValue, optionValue];
+            field.onChange(newValue);
+        } else {
+            field.onChange(optionValue);
+        }
+    };
+
+    const isSelected = (optionValue: string) => {
+        if (isMultipleChoice) {
+            return (field.value || []).includes(optionValue);
+        }
+        return field.value === optionValue;
+    };
+
+    return (
+        <div className={`space-y-3 ${className}`}>
+            {component.props.label && (
+                <Label className={`text-base font-medium ${component.required ? "after:content-['*'] after:text-red-500 after:ml-1" : ""}`}>
+                    {component.props.label}
+                </Label>
+            )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {options.map((option, index) => (
+                    <div
+                        key={index}
+                        className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-all hover:bg-gray-50 ${
+                            isSelected(option) ? 'border-primary bg-primary/5' : 'border-gray-200'
+                        }`}
+                        onClick={() => handleOptionChange(option)}
+                    >
+                        <div className={`w-4 h-4 border-2 transition-all ${
+                            isMultipleChoice ? 'rounded-sm' : 'rounded-full'
+                        } ${
+                            isSelected(option) 
+                                ? 'border-primary bg-primary' 
+                                : 'border-gray-300'
+                        }`}>
+                            {isSelected(option) && (
+                                <div className={`w-full h-full flex items-center justify-center ${
+                                    isMultipleChoice ? '' : 'rounded-full'
+                                }`}>
+                                    {isMultipleChoice ? (
+                                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    ) : (
+                                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">
+                            {option}
+                        </span>
+                    </div>
+                ))}
+            </div>
+            
+            {error && <p className="text-sm text-red-500">{error}</p>}
+        </div>
+    );
+}

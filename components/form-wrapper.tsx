@@ -12,8 +12,8 @@ function createZodSchema(components: FormComponent[]): z.ZodObject<any> {
   const schemaFields: Record<string, z.ZodTypeAny> = {};
 
   components.forEach((component) => {
-    if (['Input', 'Textarea', 'Select', 'Checkbox'].includes(component.type)) {
-      let fieldSchema: z.ZodString | z.ZodBoolean;
+    if (['Input', 'Textarea', 'Select', 'Checkbox', 'MCQ'].includes(component.type)) {
+      let fieldSchema: z.ZodString | z.ZodBoolean | z.ZodArray<any> | z.ZodUnion<any>;
 
       switch (component.type) {
         case 'Input':
@@ -68,15 +68,35 @@ function createZodSchema(components: FormComponent[]): z.ZodObject<any> {
           }
           break;
 
+        case 'MCQ':
+          if (component.quiz?.isMultipleChoice) {
+            fieldSchema = z.array(z.string());
+            if (component.required) {
+              fieldSchema = fieldSchema.min(1, 'Please select at least one option');
+            }
+          } else {
+            fieldSchema = z.string();
+            if (component.required) {
+              fieldSchema = fieldSchema.min(1, 'Please select an option');
+            }
+          }
+          break;
+
         default:
           fieldSchema = z.string();
       }
 
       // Make field optional if not required
-      if (!component.required && component.type !== 'Checkbox') {
+      if (!component.required && component.type !== 'Checkbox' && component.type !== 'MCQ') {
         schemaFields[component.id] = (fieldSchema as z.ZodString).optional().or(z.literal(''));
       } else if (!component.required && component.type === 'Checkbox') {
         schemaFields[component.id] = (fieldSchema as z.ZodBoolean).optional();
+      } else if (!component.required && component.type === 'MCQ') {
+        if (component.quiz?.isMultipleChoice) {
+          schemaFields[component.id] = (fieldSchema as z.ZodArray<any>).optional();
+        } else {
+          schemaFields[component.id] = (fieldSchema as z.ZodString).optional().or(z.literal(''));
+        }
       } else {
         schemaFields[component.id] = fieldSchema;
       }

@@ -17,7 +17,7 @@ import {
   FormButton, 
   FormLabel 
 } from './form-fields-enhanced';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, Eye, Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { renderComponent } from '@/lib/helper';
 
@@ -53,9 +53,20 @@ interface FormContentProps {
                     </div>
                     <button
                         onClick={() => setIsPreviewMode(!isPreviewMode)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 p-2 border rounded-[100%] border-zinc-800  text-zinc-800 -sm hover:bg-zinc-800
+                        hover:text-white cursor-pointer transition-all duration-200 shadow-lg hover:shadow-md"
                     >
-                        {isPreviewMode ? 'Design Mode' : 'Preview Mode'}
+                        {isPreviewMode ? (
+                            <>
+                                <Edit3 className="w-4 h-4" />
+
+                            </>
+                        ) : (
+                            <>
+                                <Eye className="w-4 h-4" />
+
+                            </>
+                        )}
                     </button>
                 </div>
             </div>

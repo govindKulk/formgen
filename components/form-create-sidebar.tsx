@@ -12,7 +12,7 @@ import { Input } from './ui/input';
 import { GripVertical } from 'lucide-react';
 
 // A list of the component types you want to offer
-const componentTypes: FormComponentType[] = ["Input", "Textarea", "Button", "Checkbox", "Select", "Switch", "Label"];
+const componentTypes: FormComponentType[] = ["Input", "Textarea", "Button", "Checkbox", "Select", "Switch", "Label", "MCQ"];
 
 // Reusable component for each draggable item in the sidebar
 function SidebarItem({ type }: { type: FormComponentType }) {
@@ -61,6 +61,19 @@ function SidebarItem({ type }: { type: FormComponentType }) {
                     <span className="text-xs">Switch</span>
                     </div>}
                     {type === "Label" && <label className="text-xs font-medium">Label text</label>}
+                    {type === "MCQ" && <div className="w-full">
+                        <div className="text-xs font-medium mb-1">Question?</div>
+                        <div className="grid grid-cols-1 gap-1">
+                            <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 border border-gray-400 rounded-full"></div>
+                                <span className="text-[10px]">Option A</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 border border-gray-400 rounded-full"></div>
+                                <span className="text-[10px]">Option B</span>
+                            </div>
+                        </div>
+                    </div>}
                     {type === "Dialog" && <div className="border border-neutral-500 rounded px-2 py-1 w-full text-xs text-center h-7 flex items-center justify-center">
                     Dialog
                     </div>}

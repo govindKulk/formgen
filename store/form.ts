@@ -3,7 +3,7 @@ import {nanoid} from 'nanoid';
 import { Component } from 'lucide-react';
 
 
-export type FormComponentType = 'Input' | 'Button' | 'Checkbox' | 'Textarea' | 'Select' | 'Switch' | 'Label' | 'Dialog' | 'Tooltip';
+export type FormComponentType = 'Input' | 'Button' | 'Checkbox' | 'Textarea' | 'Select' | 'Switch' | 'Label' | 'Dialog' | 'Tooltip' | 'MCQ';
 
 
 export interface FormStep {
@@ -15,13 +15,18 @@ export interface FormStep {
 export interface FormComponent {
     id: string;
     showLabel?: boolean;
-    type: 'Input' | 'Textarea' | 'Button' | 'Checkbox' | 'Select' | 'Switch' | 'Label' | 'Card' | 'Dialog' | 'Tooltip';
+    type: 'Input' | 'Textarea' | 'Button' | 'Checkbox' | 'Select' | 'Switch' | 'Label' | 'Card' | 'Dialog' | 'Tooltip' | 'MCQ';
     required?: boolean;
     validation?: {
         minLength?: number;
         maxLength?: number;
         pattern?: string;
         errorMessage?: string;
+    };
+    quiz?: {
+        isMultipleChoice?: boolean;
+        correctAnswers?: string[];
+        score?: number;
     };
     props: {
         label?: string;
@@ -164,6 +169,11 @@ export const useFormStore = create<FormStore>((set, get) => ({
       showLabel: type !== 'Label',
       required: false,
       validation: {},
+      quiz: type === 'MCQ' ? {
+        isMultipleChoice: false,
+        correctAnswers: [],
+        score: 1
+      } : undefined,
       props: {
         label: `New ${type + ' ' + sameTypeLabels.length}`,
         placeholder: type === 'Input' ? `Enter ${type.toLowerCase()}...` : undefined,
@@ -172,7 +182,8 @@ export const useFormStore = create<FormStore>((set, get) => ({
         switchText: type === 'Switch' ? 'Toggle me' : undefined,
         labelText: type === 'Label' ? 'Label text' : undefined,
         textareaRows: type === 'Textarea' ? 3 : undefined,
-        options: type === 'Select' ? ['Option 1', 'Option 2'] : undefined,
+        options: (type === 'Select') ? ['Option 1', 'Option 2'] : 
+                 (type === 'MCQ') ? ['Option A', 'Option B', 'Option C', 'Option D'] : undefined,
         inputType: type === 'Input' ? 'text' : undefined,
       },
     };

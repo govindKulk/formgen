@@ -143,7 +143,7 @@ const CommonProperties: React.FC<{
                 className='flex flex-col gap-3 overflow-hidden'>
                 
                 {/* Required Field Toggle */}
-                {['Input', 'Textarea', 'Select', 'Checkbox'].includes(activeComponent.type) && (
+                {['Input', 'Textarea', 'Select', 'Checkbox', 'MCQ'].includes(activeComponent.type) && (
                     <div>
                         <label className="flex items-center gap-2 text-sm font-medium mb-2">
                             <input
@@ -649,6 +649,204 @@ const TextareaProperties: React.FC<{
     );
 };
 
+// MCQ-specific properties
+const MCQProperties: React.FC<{
+    activeComponent: FormComponent,
+    updateComponent: (id: string, props: Partial<FormComponent['props']>) => void,
+    updateComponentMeta: (id: string, meta: Partial<Omit<FormComponent, 'props'>>) => void,
+}> = ({ activeComponent, updateComponent, updateComponentMeta }) => {
+    const [show, setShow] = useState(true);
+    const [newOption, setNewOption] = useState('');
+
+    const addOption = () => {
+        if (newOption.trim()) {
+            const currentOptions = activeComponent.props?.options || ['Option A', 'Option B', 'Option C', 'Option D'];
+            updateComponent(activeComponent.id, {
+                options: [...currentOptions, newOption.trim()]
+            });
+            setNewOption('');
+        }
+    };
+
+    const removeOption = (index: number) => {
+        const currentOptions = activeComponent.props?.options || [];
+        if (currentOptions.length > 2) { // Keep at least 2 options
+            const newOptions = currentOptions.filter((_, i) => i !== index);
+            updateComponent(activeComponent.id, { options: newOptions });
+            
+            // Update correct answers if needed
+            const currentCorrectAnswers = activeComponent.quiz?.correctAnswers || [];
+            const removedOption = currentOptions[index];
+            const newCorrectAnswers = currentCorrectAnswers.filter(answer => answer !== removedOption);
+            
+            updateComponentMeta(activeComponent.id, {
+                quiz: {
+                    ...activeComponent.quiz,
+                    correctAnswers: newCorrectAnswers
+                }
+            });
+        }
+    };
+
+    const updateOption = (index: number, newValue: string) => {
+        const currentOptions = activeComponent.props?.options || [];
+        const oldValue = currentOptions[index];
+        const newOptions = [...currentOptions];
+        newOptions[index] = newValue;
+        updateComponent(activeComponent.id, { options: newOptions });
+        
+        // Update correct answers if this option was marked as correct
+        const currentCorrectAnswers = activeComponent.quiz?.correctAnswers || [];
+        if (currentCorrectAnswers.includes(oldValue)) {
+            const newCorrectAnswers = currentCorrectAnswers.map(answer => 
+                answer === oldValue ? newValue : answer
+            );
+            updateComponentMeta(activeComponent.id, {
+                quiz: {
+                    ...activeComponent.quiz,
+                    correctAnswers: newCorrectAnswers
+                }
+            });
+        }
+    };
+
+    const toggleCorrectAnswer = (option: string) => {
+        const currentCorrectAnswers = activeComponent.quiz?.correctAnswers || [];
+        const isMultipleChoice = activeComponent.quiz?.isMultipleChoice || false;
+        
+        let newCorrectAnswers: string[];
+        
+        if (isMultipleChoice) {
+            // Multiple choice: toggle the option
+            newCorrectAnswers = currentCorrectAnswers.includes(option)
+                ? currentCorrectAnswers.filter(answer => answer !== option)
+                : [...currentCorrectAnswers, option];
+        } else {
+            // Single choice: set only this option
+            newCorrectAnswers = currentCorrectAnswers.includes(option) ? [] : [option];
+        }
+        
+        updateComponentMeta(activeComponent.id, {
+            quiz: {
+                ...activeComponent.quiz,
+                correctAnswers: newCorrectAnswers
+            }
+        });
+    };
+
+    return (
+        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+            <h2
+                onClick={() => setShow(!show)}
+                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                MCQ Properties
+                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+            </h2>
+            <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: show ? 1 : 0, height: show ? 'auto' : 0 }}
+                transition={{ duration: 0.3 }}
+                className='flex flex-col gap-3 overflow-hidden'>
+                
+                {/* Question Type */}
+                <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Question Type</label>
+                    <select
+                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={activeComponent.quiz?.isMultipleChoice ? 'multiple' : 'single'}
+                        onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                            quiz: { 
+                                ...activeComponent.quiz, 
+                                isMultipleChoice: e.target.value === 'multiple',
+                                correctAnswers: [] // Reset correct answers when changing type
+                            } 
+                        })}
+                    >
+                        <option value="single">Single Choice</option>
+                        <option value="multiple">Multiple Choice</option>
+                    </select>
+                </div>
+
+                {/* Score */}
+                <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Score Points</label>
+                    <input
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={activeComponent.quiz?.score || 1}
+                        onChange={(e) => updateComponentMeta(activeComponent.id, { 
+                            quiz: { 
+                                ...activeComponent.quiz, 
+                                score: parseFloat(e.target.value) || 1 
+                            } 
+                        })}
+                        placeholder="1"
+                    />
+                </div>
+
+                {/* Options */}
+                <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-700">Answer Options</label>
+                    <div className="space-y-2">
+                        {(activeComponent.props?.options || ['Option A', 'Option B', 'Option C', 'Option D']).map((option, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    className="flex-1 p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={option}
+                                    onChange={(e) => updateOption(index, e.target.value)}
+                                    placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                                />
+                                <button
+                                    onClick={() => toggleCorrectAnswer(option)}
+                                    className={`w-8 h-8 flex items-center justify-center rounded border-2 transition-colors ${
+                                        (activeComponent.quiz?.correctAnswers || []).includes(option)
+                                            ? 'bg-green-500 border-green-500 text-white'
+                                            : 'border-gray-300 hover:border-green-400'
+                                    }`}
+                                    title="Mark as correct answer"
+                                >
+                                    ✓
+                                </button>
+                                <button
+                                    onClick={() => removeOption(index)}
+                                    disabled={(activeComponent.props?.options || []).length <= 2}
+                                    className="w-8 h-8 flex items-center justify-center text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Remove option"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                        <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                            <input
+                                type="text"
+                                placeholder="+ Add new option"
+                                className="flex-1 p-2 text-sm border border-dashed border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-solid"
+                                value={newOption}
+                                onChange={(e) => setNewOption(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && addOption()}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Correct Answers Display */}
+                {(activeComponent.quiz?.correctAnswers || []).length > 0 && (
+                    <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700">Correct Answer(s)</label>
+                        <div className="p-2 bg-green-50 border border-green-200 rounded text-sm">
+                            {(activeComponent.quiz?.correctAnswers || []).join(', ')}
+                        </div>
+                    </div>
+                )}
+            </motion.div>
+        </div>
+    );
+};
+
 // Helper function to render field-specific properties
 const renderFieldSpecificProperties = (
     activeComponent: FormComponent, 
@@ -670,6 +868,8 @@ const renderFieldSpecificProperties = (
             return <LabelProperties activeComponent={activeComponent} updateComponent={updateComponent} />;
         case 'Textarea':
             return <TextareaProperties activeComponent={activeComponent} updateComponent={updateComponent} updateComponentMeta={updateComponentMeta} />;
+        case 'MCQ':
+            return <MCQProperties activeComponent={activeComponent} updateComponent={updateComponent} updateComponentMeta={updateComponentMeta} />;
         default:
             return null;
     }
