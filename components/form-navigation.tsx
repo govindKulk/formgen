@@ -20,7 +20,15 @@ export function FormNavigation({ onNext, onPrev, className = "" }: FormNavigatio
     canNavigateToPrevStep 
   } = useFormStore();
 
+  const [isLastStep, setIsLastStep] = React.useState(false);
+
   const handleNext = () => {
+
+    if(currentStepIndex == steps.length - 1) {
+      setIsLastStep(true);
+    }else{
+      setIsLastStep(false);
+    }
     if (canNavigateToNextStep()) {
       if (currentStepIndex < steps.length - 1) {
         setCurrentStep(currentStepIndex + 1);
@@ -36,7 +44,7 @@ export function FormNavigation({ onNext, onPrev, className = "" }: FormNavigatio
     }
   };
 
-  const isLastStep = currentStepIndex === steps.length - 1;
+
   const isFirstStep = currentStepIndex === 0;
 
   return (
@@ -76,7 +84,7 @@ export function FormNavigation({ onNext, onPrev, className = "" }: FormNavigatio
         disabled={!canNavigateToNextStep()}
         className="flex items-center gap-2"
       >
-        {isLastStep ? 'Submit' : 'Next'}
+        {currentStepIndex === steps.length - 1 ? 'Submit' : 'Next'}
         {!isLastStep && <ChevronRight className="w-4 h-4" />}
       </Button>
     </div>

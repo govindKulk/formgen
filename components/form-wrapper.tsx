@@ -200,6 +200,19 @@ export function FormWrapper({ children, onSubmit, className = "" }: FormWrapperP
   }, [watchedValues]); // Keep dependency but break cycle with captured values
 
   const onFormSubmit = (data: any) => {
+    // CRITICAL: Only allow form submission on the last step
+    // This prevents premature submission when user presses Enter or when there are no required fields
+    const isLastStep = currentStepIndex === steps.length - 1;
+    
+    if (!isLastStep) {
+      // If not on last step, prevent submission and do nothing
+      // Navigation should only happen through the FormNavigation component
+      console.log('Form submission prevented - not on last step. Current step:', currentStepIndex, 'Total steps:', steps.length);
+      return;
+    }
+    
+    console.log("Form submission allowed - on last step");
+    
     // Sync current step data to store before submission and get the synced values
     const currentStepData = syncFormDataToStore();
     
@@ -228,20 +241,26 @@ export function FormWrapper({ children, onSubmit, className = "" }: FormWrapperP
     console.log('Original data (with component IDs):', allFormData);
     console.log('RHF data (current step only):', data);
     console.log('Current step data just synced:', currentStepData);
-    
-    const isLastStep = currentStepIndex === steps.length - 1;
-    
-    if (isLastStep) {
-      console.log("submittin from formwrapper");
-      // Final submission - use transformed data with meaningful field names
-      onSubmit?.(transformedData);
-    }
-    // If not last step, navigation is handled by FormNavigation component
+
+    console.log("submitting from formwrapper");
+    // Final submission - use transformed data with meaningful field names
+    onSubmit?.(transformedData);
   };
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onFormSubmit)} className={className}>
+      <form 
+        onSubmit={handleSubmit(onFormSubmit)} 
+        className={className}
+        onKeyDown={(e) => {
+          // Prevent Enter key from submitting form unless on last step
+          if (e.key === 'Enter' && currentStepIndex !== steps.length - 1) {
+            e.preventDefault();
+            // Optional: You could trigger next step navigation here if desired
+            // But for now, we'll just prevent premature submission
+          }
+        }}
+      >
         {children}
         <FormNavigation 
           onNext={syncFormDataToStore}
