@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
         published: body.published || false,
         acceptsAnonymousResponses: body.acceptsAnonymousResponses || false,
         userId: dbUser.id,
+        clerkUserId
       },
     });
 
