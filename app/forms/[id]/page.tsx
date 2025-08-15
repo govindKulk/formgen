@@ -13,6 +13,9 @@ import { Input } from '@/components/ui/input'
 import { GripVertical, ArrowLeft, Save, ExternalLink, Eye, EyeOff } from 'lucide-react'
 import PropertiesPanel from '@/components/properties-panel'
 import { Badge } from '@/components/ui/badge';
+import { FormSettingsDropdown } from '@/components/form-settings-dropdown';
+import { updateFormSettings } from '@/lib/form-actions';
+import toast from 'react-hot-toast';
 
 export default function FormEditPage() {
     const params = useParams();
@@ -106,8 +109,10 @@ export default function FormEditPage() {
     const handleSave = async () => {
         try {
             await saveForm(formId);
+            toast.success('Form saved successfully');
         } catch (error) {
             console.error('Failed to save form:', error);
+            toast.error('Failed to save form');
         }
     };
 
@@ -116,8 +121,26 @@ export default function FormEditPage() {
             const newStatus = !isPublished;
             await togglePublish(formId, newStatus);
             setIsPublished(newStatus);
+            toast.success(
+                newStatus ? 'Form published successfully from page.tsx' : 'Form unpublished successfully from page.tsx'
+            );
         } catch (error) {
             console.error('Failed to toggle publish status:', error);
+            toast.error('Failed to update publish status');
+        }
+    };
+
+    const handleToggleAnonymous = async (allow: boolean) => {
+        const result = await updateFormSettings(formId, { allowAnonymous: allow });
+        if (!result.success) {
+            throw new Error(result.message);
+        }
+    };
+
+    const handleToggleDuplicates = async (allow: boolean) => {
+        const result = await updateFormSettings(formId, { allowDuplicates: allow });
+        if (!result.success) {
+            throw new Error(result.message);
         }
     };
 
@@ -272,24 +295,13 @@ export default function FormEditPage() {
                     </div>
                     
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleTogglePublish}
-                            disabled={isSaving}
-                        >
-                            {isPublished ? (
-                                <>
-                                    <EyeOff className="h-4 w-4 mr-2" />
-                                    Unpublish
-                                </>
-                            ) : (
-                                <>
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    Publish
-                                </>
-                            )}
-                        </Button>
+                        <FormSettingsDropdown
+                            formId={formId}
+                            onTogglePublish={handleTogglePublish}
+                            onToggleAnonymous={handleToggleAnonymous}
+                            onToggleDuplicates={handleToggleDuplicates}
+                            isLoading={isSaving}
+                        />
                         
                         {isPublished && (
                             <Button
@@ -331,7 +343,7 @@ export default function FormEditPage() {
                         onDragEnd={handleDragEnd}
                         collisionDetection={closestCenter}
                     >
-                        <div className='flex gap-4 w-full p-4 h-full'>
+                        <div className='flex gap-4 w-full p-4 h-full justify-between'>
                             <FormCreateSidebar/>
                             <FormCanvas/>
                             <PropertiesPanel/>

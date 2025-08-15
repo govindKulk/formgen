@@ -4,6 +4,7 @@ import { FormComponent, useFormStore } from '@/store/form'
 import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Eye, EyeClosed, Trash } from 'lucide-react';
+import { ThemeCustomization } from './theme-customization';
 
 const FormProperties: React.FC = () => {
 
@@ -893,20 +894,27 @@ function PropertiesPanel() {
     return (
         <div
             data-properties-panel // Add this identifier
-            className="w-1/4 border-l border-gray-200 p-4 shadow-md bg-white flex flex-col space-y-6"
+            className=" border-l  w-2/6 min-w-[300px] border-gray-200 shadow-md bg-white flex flex-col space-y-6 overflow-y-auto max-h-screen"
         >
-
-
-            <FormProperties />
-            {!activeComponent && <div className="text-center text-gray-500">
-                <p>Select a component to edit its properties</p>
-            </div>}
-            <CommonProperties
-                activeComponent={activeComponent}
-                updateComponent={updateComponent}
-                updateComponentMeta={updateComponentMeta}
-                removeComponent={removeComponent} />
-            {activeComponent && renderFieldSpecificProperties(activeComponent, updateComponent, updateComponentMeta)}
+            <div className="p-4">
+                <FormProperties />
+                {!activeComponent && <div className="text-center text-gray-500">
+                    <p>Select a component to edit its properties</p>
+                </div>}
+                <CommonProperties
+                    activeComponent={activeComponent}
+                    updateComponent={updateComponent}
+                    updateComponentMeta={updateComponentMeta}
+                    removeComponent={removeComponent} />
+                {activeComponent && renderFieldSpecificProperties(activeComponent, updateComponent, updateComponentMeta)}
+                
+                {/* Theme Customization - Show when no component is selected */}
+                {!activeComponent && (
+                    <div className="mt-6">
+                        <ThemeCustomization formId={window.location.pathname.split('/').pop() || ''} />
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

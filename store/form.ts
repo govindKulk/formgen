@@ -51,6 +51,13 @@ interface FormStore {
   currentStepIndex: number;
   title: string;
   primaryColor: string;
+  backgroundColor: string;
+  brandLogo?: string;
+  showPoweredBy: boolean;
+  // Form settings
+  isPublished: boolean;
+  allowAnonymous: boolean;
+  allowDuplicates: boolean;
   activeComponentId?: string;
   submissionMessage: string;
   formData: Record<string, any>;
@@ -59,6 +66,13 @@ interface FormStore {
   setTitle: (title: string) => void;
   setStepTitle: (stepTitle: string, currentStepIndex: number) => void,
   setPrimaryColor: (color: string) => void;
+  setBackgroundColor: (color: string) => void;
+  setBrandLogo: (logo?: string) => void;
+  setShowPoweredBy: (show: boolean) => void;
+  // Form settings actions
+  setIsPublished: (published: boolean) => void;
+  setAllowAnonymous: (allow: boolean) => void;
+  setAllowDuplicates: (allow: boolean) => void;
   setActiveComponentId: (id?: string) => void;
   addComponent: (index: number, type: FormComponentType) => void;
   removeComponent: (id: string) => void;
@@ -98,6 +112,13 @@ export const useFormStore = create<FormStore>((set, get) => ({
   currentStepIndex: 0,
   title: 'My Form',
   primaryColor: '#3b82f6',
+  backgroundColor: '#ffffff',
+  brandLogo: undefined,
+  showPoweredBy: true,
+  // Form settings
+  isPublished: false,
+  allowAnonymous: true,
+  allowDuplicates: true,
   activeComponentId: undefined,
   submissionMessage: 'Form submitted successfully!',
   formData: {},
@@ -107,6 +128,13 @@ export const useFormStore = create<FormStore>((set, get) => ({
   setActiveComponentId: (id) => set({ activeComponentId: id }),
   setTitle: (title) => set({ title }),
   setPrimaryColor: (color) => set({ primaryColor: color }),
+  setBackgroundColor: (color) => set({ backgroundColor: color }),
+  setBrandLogo: (logo) => set({ brandLogo: logo }),
+  setShowPoweredBy: (show) => set({ showPoweredBy: show }),
+  // Form settings actions
+  setIsPublished: (published) => set({ isPublished: published }),
+  setAllowAnonymous: (allow) => set({ allowAnonymous: allow }),
+  setAllowDuplicates: (allow) => set({ allowDuplicates: allow }),
 
   // Form data management
   setFormData: (data) => set({ formData: data }),

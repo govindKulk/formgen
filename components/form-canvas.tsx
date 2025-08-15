@@ -275,7 +275,7 @@ function FormCanvas() {
    
     
     return (
-        <div className='h-fit w-full relative flex flex-col'>
+        <div className='h-fit w-full relative flex flex-col   '>
             {/* Step Container with Sliding Animation */}
 
             <div className="relative overflow-hidden">
