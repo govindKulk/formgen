@@ -255,7 +255,9 @@ export default function FormsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredForms.map((form) => (
-            <Card key={form.id} className="hover:shadow-md transition-shadow cursor-pointer group">
+            <Card key={form.id} className="hover:shadow-md transition-shadow cursor-pointer group"
+            onClick={() => router.push('/forms/' + form.id)}
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

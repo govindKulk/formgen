@@ -1,24 +1,33 @@
 import { renderComponent } from "@/lib/helper";
 import { FormComponent, FormStep } from "@/store/form";
+import Image from "next/image";
 import React from "react";
 
- interface FormContentProps {
-   title: string;
-   currentStep: FormStep;
-   currentStepIndex: number;
-   steps: FormStep[];
-   components: FormComponent[];
- }
- 
- 
- const PublicFormContent = ({
-   title,
-   currentStep,
-   currentStepIndex,
-   steps,
-   components
- }: FormContentProps) => {
-    
+interface FormContentProps {
+    title: string;
+    currentStep: FormStep;
+    currentStepIndex: number;
+    steps: FormStep[];
+    components: FormComponent[];
+    brandLogo?: string;
+    primaryColor?: string;
+    backgroundColor?: string;
+    showPoweredBy?: boolean;
+}
+
+
+const PublicFormContent = ({
+    title,
+    currentStep,
+    currentStepIndex,
+    steps,
+    components,
+    brandLogo,
+    primaryColor,
+    backgroundColor,
+    showPoweredBy
+}: FormContentProps) => {
+
     // Debug logging
     console.log('PublicFormContent render:', {
         title,
@@ -29,17 +38,45 @@ import React from "react";
         components
     });
 
+
     return (
-        <>
-            <div>
-                <div className="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 className="text-2xl py-2 font-semibold">
+        <div
+        className="
+        "
+
+   
+
+        >
+            <div
+           
+            >
+                <div className="flex flex-col md:flex-row justify-between items-center  mb-4">
+                    <div
+                    className="order-2 md:order-1"
+                    >
+                        <h2 className=" text-2xl py-2 font-semibold" style={{
+                            color: primaryColor || '#000000',
+                        }}>
                             {title || 'Untitled Form'}
                         </h2>
-                        <p className="text-sm text-gray-600 mb-4">
+                        <p className="text-sm text-neutral-500 mb-4"
+                        
+                        >
                             {currentStep?.stepTitle || 'Step'} ({currentStepIndex + 1} of {steps.length})
                         </p>
+                    </div>
+                    <div
+                    className="p-4 md:p-0 md:order-2"
+                    >
+                        {brandLogo && (
+                        <Image 
+                            src={brandLogo}
+                            alt="Brand Logo"
+                            width={200}
+                            height={100}
+                            className="rounded-full" 
+                        />
+                    )}
                     </div>
                 </div>
             </div>
@@ -60,7 +97,7 @@ import React from "react";
                     <p className="text-gray-600">No form components found</p>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

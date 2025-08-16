@@ -95,7 +95,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
         steps: content.steps,
         currentStepIndex: content.currentStepIndex,
         title: content.title,
-        primaryColor: content.primaryColor,
+        theme: content.theme,
         submissionMessage: content.submissionMessage,
         formData: content.formData,
       });
@@ -198,7 +198,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
         steps: content.steps,
         currentStepIndex: 0, // Always start from first step for public forms
         title: content.title,
-        primaryColor: content.primaryColor,
+        theme: content.theme,
         submissionMessage: content.submissionMessage,
         formData: {}, // Start with empty form data for public forms
       });

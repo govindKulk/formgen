@@ -53,7 +53,7 @@ export default function FormEditPage() {
         const currentFormState = JSON.stringify({
             steps: formStore.steps,
             title: formStore.title,
-            primaryColor: formStore.primaryColor,
+            primaryColor: formStore.theme.primaryColor,
             submissionMessage: formStore.submissionMessage,
             formData: formStore.formData,
             currentStepIndex: formStore.currentStepIndex

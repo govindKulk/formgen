@@ -158,6 +158,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                     formId: form.id,
                     responderName: dbUser.name,
                     responderEmail: dbUser.email,
+                    clerkUserId: dbUser.clerkUserId
                 }
             });
 

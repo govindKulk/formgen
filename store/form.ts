@@ -43,17 +43,23 @@ export interface FormComponent {
     }
 }
 
+export interface FormTheme {
+  backgroundColor: string;
+  primaryColor: string;
+  textColor: string;
+  brandLogo?: string;
+  showPoweredBy: boolean;
+}
+
 
 
 // Define the state and actions for your store
-interface FormStore {
+export interface FormStore {
   steps: FormStep[];
   currentStepIndex: number;
   title: string;
-  primaryColor: string;
-  backgroundColor: string;
-  brandLogo?: string;
-  showPoweredBy: boolean;
+  theme: FormTheme;
+  setTheme: (theme: Partial<FormTheme>) => void;
   // Form settings
   isPublished: boolean;
   allowAnonymous: boolean;
@@ -65,10 +71,6 @@ interface FormStore {
   setSubmissionMessage: (message: string) => void;
   setTitle: (title: string) => void;
   setStepTitle: (stepTitle: string, currentStepIndex: number) => void,
-  setPrimaryColor: (color: string) => void;
-  setBackgroundColor: (color: string) => void;
-  setBrandLogo: (logo?: string) => void;
-  setShowPoweredBy: (show: boolean) => void;
   // Form settings actions
   setIsPublished: (published: boolean) => void;
   setAllowAnonymous: (allow: boolean) => void;
@@ -97,6 +99,8 @@ interface FormStore {
   // Reset form data for public forms
   resetFormData: () => void;
   getAllComponents: () => FormComponent[];
+  //
+  resetFormStore: () => void;
 }
 
 export const useFormStore = create<FormStore>((set, get) => ({
@@ -111,10 +115,16 @@ export const useFormStore = create<FormStore>((set, get) => ({
   ],
   currentStepIndex: 0,
   title: 'My Form',
-  primaryColor: '#3b82f6',
-  backgroundColor: '#ffffff',
-  brandLogo: undefined,
-  showPoweredBy: true,
+  
+  // Form Theme
+  theme: {
+    primaryColor: '#3b82f6',
+    backgroundColor: '#ffffff',
+    brandLogo: undefined,
+    showPoweredBy: true,
+    textColor: '#000000',
+  },
+
   // Form settings
   isPublished: false,
   allowAnonymous: true,
@@ -123,19 +133,16 @@ export const useFormStore = create<FormStore>((set, get) => ({
   submissionMessage: 'Form submitted successfully!',
   formData: {},
   currentStepValid: true,
-
+  
   setSubmissionMessage: (message) => set({ submissionMessage: message }),
   setActiveComponentId: (id) => set({ activeComponentId: id }),
   setTitle: (title) => set({ title }),
-  setPrimaryColor: (color) => set({ primaryColor: color }),
-  setBackgroundColor: (color) => set({ backgroundColor: color }),
-  setBrandLogo: (logo) => set({ brandLogo: logo }),
-  setShowPoweredBy: (show) => set({ showPoweredBy: show }),
+  
   // Form settings actions
   setIsPublished: (published) => set({ isPublished: published }),
   setAllowAnonymous: (allow) => set({ allowAnonymous: allow }),
   setAllowDuplicates: (allow) => set({ allowDuplicates: allow }),
-
+  
   // Form data management
   setFormData: (data) => set({ formData: data }),
   updateFormField: (fieldName, value) => {
@@ -144,7 +151,13 @@ export const useFormStore = create<FormStore>((set, get) => ({
     }));
   },
   setCurrentStepValidation: (isValid) => set({ currentStepValid: isValid }),
-
+  
+  setTheme: (theme: Partial<FormTheme>) => set((state) => ({
+    theme: {
+      ...state.theme,
+      ...theme,
+    }
+  })),
   // Navigation validation
   canNavigateToNextStep: () => {
     const state = get();
@@ -194,7 +207,7 @@ export const useFormStore = create<FormStore>((set, get) => ({
     const newComponent: FormComponent = {
       id: nanoid(),
       type: type,
-      showLabel: type !== 'Label',
+      showLabel: (type !== 'Label' && type !== 'MCQ'),
       required: false,
       validation: {},
       quiz: type === 'MCQ' ? {
@@ -371,5 +384,31 @@ export const useFormStore = create<FormStore>((set, get) => ({
 
   getAllComponents: () => {
     return get().steps.flatMap(step => step.components);
+  },
+
+  resetFormStore: () => {
+    set({
+      steps: [{
+        id: nanoid(),
+        stepTitle: "First Step",
+        components: [],
+      }],
+      currentStepIndex: 0,
+      title: 'My Form',
+      theme: {
+        primaryColor: '#3b82f6',
+        backgroundColor: '#ffffff',
+        brandLogo: undefined,
+        showPoweredBy: true,
+        textColor: '#000000',
+      },
+      isPublished: false,
+      allowAnonymous: true,
+      allowDuplicates: true,
+      activeComponentId: undefined,
+      submissionMessage: 'Form submitted successfully!',
+      formData: {},
+      currentStepValid: true,
+    });
   }
 }));

@@ -40,7 +40,7 @@ const renderComponent = (component: FormComponent, isPreviewMode: boolean = fals
     }
   }
 
-  // Use basic UI components for design mode (existing functionality)
+  // Design Mode
   switch (component.type) {
     case 'Input':
       return <Input placeholder={component.props?.placeholder || 'Enter text...'} />;
@@ -116,6 +116,18 @@ const renderComponent = (component: FormComponent, isPreviewMode: boolean = fals
   }
 };
 
+const debounce = (func: Function, delay: number) => {
+  let timeOutId: NodeJS.Timeout;
+
+  return (...args: any[]) => {
+    if (timeOutId) clearTimeout(timeOutId);
+    timeOutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+
 export {
-  renderComponent
+  renderComponent,
+  debounce
 }

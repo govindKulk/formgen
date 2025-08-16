@@ -2,6 +2,8 @@
 import PublicForm from '@/components/public-form';
 import { useFormApi } from '@/hooks/use-form-api'
 import { useFormStore } from '@/store/form';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { useFormState } from 'react-dom';
@@ -15,7 +17,7 @@ function PublicFormPage() {
     const [submissionSuccess, setSubmissionSuccess] = useState<boolean>(false);
 
     const {submissionMessage} = useFormStore();
-    
+
     const {
         loadPublicForm,
         isLoading,
@@ -29,21 +31,21 @@ function PublicFormPage() {
             } else {
                 setFormLoaded(true);
             }
-        }, 
+        },
         onError: (error) => {
             console.error('Error:', error);
             setError(error);
         }
     });
 
-    const {id} = useParams();
+    const { id } = useParams();
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             setError(null);
             setFormLoaded(false);
-            
+
             try {
                 await loadPublicForm(id as string);
                 // Success is handled in onSuccess callback
@@ -54,7 +56,7 @@ function PublicFormPage() {
                 setLoading(false);
             }
         };
-        
+
         if (id) {
             fetchData();
         }
@@ -75,7 +77,18 @@ function PublicFormPage() {
                         </div>
                         <h2 className="text-2xl font-semibold text-gray-900 mb-2">Thank you!</h2>
                         <p className="text-gray-600">{
-                            submissionMessage || "Your form has been submitted successfully"}</p>
+                            submissionMessage || "Your form has been submitted successfully"}
+                        </p>
+
+                        { (
+                            <div className="absolute w-full text-center bottom-4 right-4    text-gray-500
+                                            flex items-center gap-2 justify-center font-bold
+                                            ">
+                                Powered by <Link href="/" className="text-blue-600 hover:underline">
+                                    <Image src={"/logo.svg"} alt="FormGen Logo" width={150} height={36} />
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -83,13 +96,13 @@ function PublicFormPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center" >
             {(loading || isLoading) ? (
                 <div className="flex flex-col items-center justify-center min-h-[400px]">
                     <ClipLoader size={50} color="#3b82f6" />
                     <p className="mt-4 text-gray-600">Loading form...</p>
                 </div>
-            ) : (   
+            ) : (
                 <>
                     {error && (
                         <div className="max-w-lg mx-auto mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -100,6 +113,7 @@ function PublicFormPage() {
                     {formLoaded && !error && (
                         <div className="w-full relative">
                             <PublicForm submitResponse={submitResponse} />
+
                             {isSaving && (
                                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-lg">
                                     <div className="flex flex-col items-center">

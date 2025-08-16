@@ -98,8 +98,8 @@ const FormProperties: React.FC = () => {
                         type="color"
                         id="primary-color"
                         className="w-full h-8 border rounded cursor-pointer"
-                        value={formStore.primaryColor}
-                        onChange={(e) => formStore.setPrimaryColor(e.target.value)}
+                        value={formStore.theme.primaryColor}
+                        onChange={(e) => formStore.setTheme({primaryColor: e.target.value})}
                     />
                 </div>
             </motion.div>

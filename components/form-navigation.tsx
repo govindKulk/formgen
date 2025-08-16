@@ -17,7 +17,8 @@ export function FormNavigation({ onNext, onPrev, className = "" }: FormNavigatio
     steps, 
     setCurrentStep, 
     canNavigateToNextStep, 
-    canNavigateToPrevStep 
+    canNavigateToPrevStep,
+    theme
   } = useFormStore();
 
   const [isLastStep, setIsLastStep] = React.useState(false);
@@ -79,6 +80,10 @@ export function FormNavigation({ onNext, onPrev, className = "" }: FormNavigatio
 
       {/* Next/Submit Button */}
       <Button
+        style={{
+          backgroundColor: theme?.primaryColor || '#3b82f6',
+          color:  '#ffffff'
+        }}
         type={isLastStep ? "submit" : "button"}
         onClick={isLastStep ? undefined : handleNext}
         disabled={!canNavigateToNextStep()}

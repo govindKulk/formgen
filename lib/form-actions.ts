@@ -73,6 +73,7 @@ export async function updateFormTheme(
     backgroundColor?: string;
     brandLogo?: string;
     showPoweredBy?: boolean;
+    textColor?: string;
   }
 ) {
   try {
@@ -82,6 +83,8 @@ export async function updateFormTheme(
       throw new Error('Unauthorized');
     }
 
+
+
     // Verify user owns the form
     const existingForm = await prisma.form.findFirst({
       where: {
@@ -89,6 +92,8 @@ export async function updateFormTheme(
         clerkUserId: userId,
       },
     });
+
+    console.log("Updating form theme for form:", formId, "with theme:", theme);
 
     if (!existingForm) {
       throw new Error('Form not found or unauthorized');
