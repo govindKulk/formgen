@@ -56,7 +56,8 @@ model FormResponse {
   content            Json     @default("{}")
   formId             String
   createdAt          DateTime @default(now())
-  clerkUserId        String
+  clerkUserId        String? // anonymous responses may not have a clerkUserId
+  updatedAt          DateTime @updatedAt @default(now())
   form               Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
   user               User?    @relation(fields: [responderId], references: [id])
 }
