@@ -4,13 +4,9 @@ import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 
 import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+  ClerkProvider} from '@clerk/nextjs'
+
+import Navbar from "@/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,23 +29,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-
     <ClerkProvider>
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <header className="flex  justify-end  items-center px-8 py-2 gap-4 bg-green-50 ">
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton>
-                <button className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
+          <Navbar/>
           {children}
           <Toaster 
             position="top-right"

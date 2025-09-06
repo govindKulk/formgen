@@ -9,45 +9,7 @@ import { CheckCircle, Code, Share2, BarChart3, Shield, Zap, ArrowRight, Play } f
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
-      {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-green-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Image
-                src="/Logo.svg"
-                alt="FormGen Logo"
-                width={120}
-                height={32}
-                className="h-8 w-auto"
-              />
-            </div>
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
-                <Link href="#" className="text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors">
-                  Home
-                </Link>
-                <Link href="#" className="text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors">
-                  About
-                </Link>
-                <Link href="#" className="text-gray-600 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors">
-                  Contact
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button 
-                asChild
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-medium transition-all duration-200 transform hover:scale-105"
-              >
-                <Link href="/forms">
-                  Dashboard
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-32 overflow-hidden">
@@ -87,9 +49,9 @@ export default function Home() {
         
         {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-4000"></div>
         </div>
       </section>
 
