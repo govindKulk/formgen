@@ -894,7 +894,9 @@ function PropertiesPanel() {
     return (
         <div
             data-properties-panel // Add this identifier
-            className=" border-l  w-2/6 min-w-[300px] border-gray-200 shadow-md bg-white flex flex-col space-y-6 overflow-y-auto max-h-screen"
+            className=" border-l  w-2/6 min-w-[300px] border-gray-200 shadow-md bg-white flex flex-col space-y-6 overflow-y-auto max-h-screen
+            sticky right-0 top-0 h-screen
+            "
         >
             <div className="p-4">
                 <FormProperties />

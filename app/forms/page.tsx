@@ -156,7 +156,7 @@ export default function FormsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container px-4 py-8 max-w-screen-xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -299,7 +299,10 @@ export default function FormsPage() {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
-                        onClick={() => handleDeleteForm(form.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteForm(form.id)
+                        }}
                         className="text-destructive"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
