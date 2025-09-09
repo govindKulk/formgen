@@ -79,16 +79,16 @@ function PublicFormPage() {
                         <p className="text-gray-600">{
                             submissionMessage || "Your form has been submitted successfully"}
                         </p>
-
-                        { (
-                            <div className="absolute w-full text-center bottom-4 right-4    text-gray-500
-                                            flex items-center gap-2 justify-center font-bold
-                                            ">
-                                Powered by <Link href="/" className="text-blue-600 hover:underline">
-                                    <Image src={"/logo.svg"} alt="FormGen Logo" width={150} height={36} />
-                                </Link>
-                            </div>
-                        )}
+                    </div>
+                    
+                    {/* Powered by footer - positioned relative to the card */}
+                    <div className="mt-8 pt-4 border-t border-gray-100 text-center text-sm text-gray-500">
+                        <div className="flex items-center gap-2 justify-center">
+                            <span>Powered by</span>
+                            <Link href="/" className="text-blue-600 hover:underline">
+                                <Image src="/Logo.svg" alt="FormGen Logo" width={100} height={24} />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
