@@ -13,14 +13,14 @@ const FormProperties: React.FC = () => {
 
     return (
         <div
-            className='flex flex-col gap-4 p-4 border-b border-gray-100'
+            className='flex flex-col gap-4 p-4 border-b border-border'
         >
 
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Form Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
 
             </h2>
             <motion.div
@@ -63,11 +63,11 @@ const FormProperties: React.FC = () => {
                 {/* Current Step Info */}
                 <div>
                     <label className="block text-sm font-medium mb-2">Current Step</label>
-                    <div className="flex items-center justify-between p-2 bg-gray-50 rounded border">
-                        <span className="text-sm text-gray-700">
+                    <div className="flex items-center justify-between p-2 bg-muted rounded border">
+                        <span className="text-sm text-foreground">
                             Step {formStore.currentStepIndex + 1} of {formStore.steps.length}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted-foreground">
                             {formStore.steps[formStore.currentStepIndex]?.stepTitle}
                         </span>
                     </div>
@@ -78,14 +78,14 @@ const FormProperties: React.FC = () => {
                             <button
                                 onClick={() => formStore.setCurrentStep(Math.max(0, formStore.currentStepIndex - 1))}
                                 disabled={formStore.currentStepIndex === 0}
-                                className="flex-1 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded"
+                                className="flex-1 px-2 py-1 text-xs bg-muted hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed rounded"
                             >
                                 Previous
                             </button>
                             <button
                                 onClick={() => formStore.setCurrentStep(Math.min(formStore.steps.length - 1, formStore.currentStepIndex + 1))}
                                 disabled={formStore.currentStepIndex === formStore.steps.length - 1}
-                                className="flex-1 px-2 py-1 text-xs bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed rounded"
+                                className="flex-1 px-2 py-1 text-xs bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded"
                             >
                                 Next
                             </button>
@@ -127,14 +127,14 @@ const CommonProperties: React.FC<{
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className='flex flex-col gap-4 p-4 border-b border-gray-100'
+            className='flex flex-col gap-4 p-4 border-b border-border'
         >
 
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Common Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
 
             </h2>
             <motion.div
@@ -151,7 +151,7 @@ const CommonProperties: React.FC<{
                                 type="checkbox"
                                 checked={activeComponent.required || false}
                                 onChange={(e) => updateComponentMeta(activeComponent.id, { required: e.target.checked })}
-                                className="rounded border-gray-300"
+                                className="rounded border-border"
                             />
                             Required Field
                         </label>
@@ -168,14 +168,14 @@ const CommonProperties: React.FC<{
                         updateComponentMeta(activeComponent.id, { showLabel: !activeComponent.showLabel });
                     }}
                     >
-                        {activeComponent.showLabel ?  <Eye className="w-4 h-4 text-gray-500" /> :
-                            <EyeClosed className="w-4 h-4 text-gray-500" />}
+                        {activeComponent.showLabel ?  <Eye className="w-4 h-4 text-muted-foreground" /> :
+                            <EyeClosed className="w-4 h-4 text-muted-foreground" />}
                     </span>
                 </label>
                 <input
                     type="text"
                     disabled={!activeComponent.showLabel}
-                    className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring disabled:bg-muted disabled:cursor-not-allowed"
                     value={!activeComponent.showLabel ? 'None' : activeComponent.props?.label || ''}
                     onChange={(e) => {
                         updateComponent(activeComponent.id, { label: e.target.value });
@@ -215,12 +215,12 @@ const InputProperties: React.FC<{
     const [show, setShow] = useState(true);
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Input Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -230,9 +230,9 @@ const InputProperties: React.FC<{
                 
                 {/* Input Type Selection */}
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Input Type</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Input Type</label>
                     <select
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.inputType || 'text'}
                         onChange={(e) => updateComponent(activeComponent.id, { inputType: e.target.value as any })}
                     >
@@ -246,10 +246,10 @@ const InputProperties: React.FC<{
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Placeholder Text</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Placeholder Text</label>
                     <input
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.placeholder || ''}
                         onChange={(e) => updateComponent(activeComponent.id, { placeholder: e.target.value })}
                     />
@@ -257,15 +257,15 @@ const InputProperties: React.FC<{
 
                 {/* Validation Options */}
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Validation</label>
-                    <div className="space-y-3 border border-gray-200 rounded p-3">
+                    <label className="block text-sm font-medium mb-2 text-foreground">Validation</label>
+                    <div className="space-y-3 border border-border rounded p-3">
                         <div className="grid grid-cols-2 gap-2">
                             <div>
-                                <label className="block text-xs font-medium mb-1 text-gray-600">Min Length</label>
+                                <label className="block text-xs font-medium mb-1 text-muted-foreground">Min Length</label>
                                 <input
                                     type="number"
                                     min="0"
-                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full p-1 text-sm border border-input rounded focus:outline-none focus:ring-1 focus:ring-ring"
                                     value={activeComponent.validation?.minLength || ''}
                                     onChange={(e) => updateComponentMeta(activeComponent.id, { 
                                         validation: { 
@@ -277,11 +277,11 @@ const InputProperties: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium mb-1 text-gray-600">Max Length</label>
+                                <label className="block text-xs font-medium mb-1 text-muted-foreground">Max Length</label>
                                 <input
                                     type="number"
                                     min="1"
-                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full p-1 text-sm border border-input rounded focus:outline-none focus:ring-1 focus:ring-ring"
                                     value={activeComponent.validation?.maxLength || ''}
                                     onChange={(e) => updateComponentMeta(activeComponent.id, { 
                                         validation: { 
@@ -294,10 +294,10 @@ const InputProperties: React.FC<{
                             </div>
                         </div>
                         <div>
-                            <label className="block text-xs font-medium mb-1 text-gray-600">Custom Pattern (RegEx)</label>
+                            <label className="block text-xs font-medium mb-1 text-muted-foreground">Custom Pattern (RegEx)</label>
                             <input
                                 type="text"
-                                className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full p-1 text-sm border border-input rounded focus:outline-none focus:ring-1 focus:ring-ring"
                                 value={activeComponent.validation?.pattern || ''}
                                 onChange={(e) => updateComponentMeta(activeComponent.id, { 
                                     validation: { 
@@ -309,10 +309,10 @@ const InputProperties: React.FC<{
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium mb-1 text-gray-600">Custom Error Message</label>
+                            <label className="block text-xs font-medium mb-1 text-muted-foreground">Custom Error Message</label>
                             <input
                                 type="text"
-                                className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full p-1 text-sm border border-input rounded focus:outline-none focus:ring-1 focus:ring-ring"
                                 value={activeComponent.validation?.errorMessage || ''}
                                 onChange={(e) => updateComponentMeta(activeComponent.id, { 
                                     validation: { 
@@ -362,12 +362,12 @@ const SelectProperties: React.FC<{
     };
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Select Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -375,13 +375,13 @@ const SelectProperties: React.FC<{
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Options</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Options</label>
                     <div className="space-y-2">
                         {(activeComponent.props?.options || []).map((option, index) => (
                             <div key={index} className="flex items-center gap-2">
                                 <input
                                     type="text"
-                                    className="flex-1 p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="flex-1 p-2 text-sm border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                                     value={option}
                                     onChange={(e) => updateOption(index, e.target.value)}
                                     placeholder={`Option ${index + 1}`}
@@ -395,11 +395,11 @@ const SelectProperties: React.FC<{
                                 </button>
                             </div>
                         ))}
-                        <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                        <div className="flex items-center gap-2 pt-2 border-t border-border">
                             <input
                                 type="text"
                                 placeholder="+ Add new option"
-                                className="flex-1 p-2 text-sm border border-dashed border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-solid"
+                                className="flex-1 p-2 text-sm border border-dashed border-input rounded focus:outline-none focus:ring-2 focus:ring-ring focus:border-solid"
                                 value={newOption}
                                 onChange={(e) => setNewOption(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && addOption()}
@@ -420,12 +420,12 @@ const ButtonProperties: React.FC<{
     const [show, setShow] = useState(true);
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Button Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -433,10 +433,10 @@ const ButtonProperties: React.FC<{
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Button Text</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Button Text</label>
                     <input
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.buttonText || ''}
                         onChange={(e) => updateComponent(activeComponent.id, { buttonText: e.target.value })}
                     />
@@ -454,12 +454,12 @@ const CheckboxProperties: React.FC<{
     const [show, setShow] = useState(true);
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Checkbox Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -467,10 +467,10 @@ const CheckboxProperties: React.FC<{
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Checkbox Text</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Checkbox Text</label>
                     <input
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.checkboxText || ''}
                         onChange={(e) => updateComponent(activeComponent.id, { checkboxText: e.target.value })}
                     />
@@ -488,12 +488,12 @@ const SwitchProperties: React.FC<{
     const [show, setShow] = useState(true);
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Switch Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -501,10 +501,10 @@ const SwitchProperties: React.FC<{
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Switch Text</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Switch Text</label>
                     <input
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.switchText || ''}
                         onChange={(e) => updateComponent(activeComponent.id, { switchText: e.target.value })}
                     />
@@ -522,12 +522,12 @@ const LabelProperties: React.FC<{
     const [show, setShow] = useState(true);
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Label Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -535,10 +535,10 @@ const LabelProperties: React.FC<{
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Label Text</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Label Text</label>
                     <input
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.labelText || ''}
                         onChange={(e) => updateComponent(activeComponent.id, { labelText: e.target.value })}
                     />
@@ -557,12 +557,12 @@ const TextareaProperties: React.FC<{
     const [show, setShow] = useState(true);
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 Textarea Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -570,21 +570,21 @@ const TextareaProperties: React.FC<{
                 transition={{ duration: 0.3 }}
                 className='flex flex-col gap-3 overflow-hidden'>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Placeholder Text</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Placeholder Text</label>
                     <input
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.placeholder || ''}
                         onChange={(e) => updateComponent(activeComponent.id, { placeholder: e.target.value })}
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Number of Rows</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Number of Rows</label>
                     <input
                         type="number"
                         min="1"
                         max="10"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.props?.textareaRows || 3}
                         onChange={(e) => updateComponent(activeComponent.id, { textareaRows: parseInt(e.target.value) || 3 })}
                     />
@@ -592,15 +592,15 @@ const TextareaProperties: React.FC<{
 
                 {/* Validation Options */}
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Validation</label>
-                    <div className="space-y-3 border border-gray-200 rounded p-3">
+                    <label className="block text-sm font-medium mb-2 text-foreground">Validation</label>
+                    <div className="space-y-3 border border-border rounded p-3">
                         <div className="grid grid-cols-2 gap-2">
                             <div>
-                                <label className="block text-xs font-medium mb-1 text-gray-600">Min Length</label>
+                                <label className="block text-xs font-medium mb-1 text-muted-foreground">Min Length</label>
                                 <input
                                     type="number"
                                     min="0"
-                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full p-1 text-sm border border-input rounded focus:outline-none focus:ring-1 focus:ring-ring"
                                     value={activeComponent.validation?.minLength || ''}
                                     onChange={(e) => updateComponentMeta(activeComponent.id, { 
                                         validation: { 
@@ -612,11 +612,11 @@ const TextareaProperties: React.FC<{
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium mb-1 text-gray-600">Max Length</label>
+                                <label className="block text-xs font-medium mb-1 text-muted-foreground">Max Length</label>
                                 <input
                                     type="number"
                                     min="1"
-                                    className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full p-1 text-sm border border-input rounded focus:outline-none focus:ring-1 focus:ring-ring"
                                     value={activeComponent.validation?.maxLength || ''}
                                     onChange={(e) => updateComponentMeta(activeComponent.id, { 
                                         validation: { 
@@ -629,10 +629,10 @@ const TextareaProperties: React.FC<{
                             </div>
                         </div>
                         <div>
-                            <label className="block text-xs font-medium mb-1 text-gray-600">Custom Error Message</label>
+                            <label className="block text-xs font-medium mb-1 text-muted-foreground">Custom Error Message</label>
                             <input
                                 type="text"
-                                className="w-full p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full p-1 text-sm border border-input rounded focus:outline-none focus:ring-1 focus:ring-ring"
                                 value={activeComponent.validation?.errorMessage || ''}
                                 onChange={(e) => updateComponentMeta(activeComponent.id, { 
                                     validation: { 
@@ -736,12 +736,12 @@ const MCQProperties: React.FC<{
     };
 
     return (
-        <div className='flex flex-col gap-4 p-4 border-b border-gray-100'>
+        <div className='flex flex-col gap-4 p-4 border-b border-border'>
             <h2
                 onClick={() => setShow(!show)}
-                className='text-base font-semibold text-gray-900 flex justify-between items-center cursor-pointer w-full hover:text-gray-700 transition-colors'>
+                className='text-base font-semibold text-foreground flex justify-between items-center cursor-pointer w-full hover:text-muted-foreground transition-colors'>
                 MCQ Properties
-                <span className="text-sm text-gray-500">{show ? '▲' : '▼'}</span>
+                <span className="text-sm text-muted-foreground">{show ? '▲' : '▼'}</span>
             </h2>
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -751,9 +751,9 @@ const MCQProperties: React.FC<{
                 
                 {/* Question Type */}
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Question Type</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Question Type</label>
                     <select
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.quiz?.isMultipleChoice ? 'multiple' : 'single'}
                         onChange={(e) => updateComponentMeta(activeComponent.id, { 
                             quiz: { 
@@ -770,12 +770,12 @@ const MCQProperties: React.FC<{
 
                 {/* Score */}
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Score Points</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Score Points</label>
                     <input
                         type="number"
                         min="0"
                         step="0.5"
-                        className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                         value={activeComponent.quiz?.score || 1}
                         onChange={(e) => updateComponentMeta(activeComponent.id, { 
                             quiz: { 
@@ -789,13 +789,13 @@ const MCQProperties: React.FC<{
 
                 {/* Options */}
                 <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-700">Answer Options</label>
+                    <label className="block text-sm font-medium mb-2 text-foreground">Answer Options</label>
                     <div className="space-y-2">
                         {(activeComponent.props?.options || ['Option A', 'Option B', 'Option C', 'Option D']).map((option, index) => (
                             <div key={index} className="flex items-center gap-2">
                                 <input
                                     type="text"
-                                    className="flex-1 p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="flex-1 p-2 text-sm border border-input rounded focus:outline-none focus:ring-2 focus:ring-ring"
                                     value={option}
                                     onChange={(e) => updateOption(index, e.target.value)}
                                     placeholder={`Option ${String.fromCharCode(65 + index)}`}
@@ -805,7 +805,7 @@ const MCQProperties: React.FC<{
                                     className={`w-8 h-8 flex items-center justify-center rounded border-2 transition-colors ${
                                         (activeComponent.quiz?.correctAnswers || []).includes(option)
                                             ? 'bg-green-500 border-green-500 text-white'
-                                            : 'border-gray-300 hover:border-green-400'
+                                            : 'border-border hover:border-green-400'
                                     }`}
                                     title="Mark as correct answer"
                                 >
@@ -821,11 +821,11 @@ const MCQProperties: React.FC<{
                                 </button>
                             </div>
                         ))}
-                        <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                        <div className="flex items-center gap-2 pt-2 border-t border-border">
                             <input
                                 type="text"
                                 placeholder="+ Add new option"
-                                className="flex-1 p-2 text-sm border border-dashed border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-solid"
+                                className="flex-1 p-2 text-sm border border-dashed border-input rounded focus:outline-none focus:ring-2 focus:ring-ring focus:border-solid"
                                 value={newOption}
                                 onChange={(e) => setNewOption(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && addOption()}
@@ -837,7 +837,7 @@ const MCQProperties: React.FC<{
                 {/* Correct Answers Display */}
                 {(activeComponent.quiz?.correctAnswers || []).length > 0 && (
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-gray-700">Correct Answer(s)</label>
+                        <label className="block text-sm font-medium mb-2 text-foreground">Correct Answer(s)</label>
                         <div className="p-2 bg-green-50 border border-green-200 rounded text-sm">
                             {(activeComponent.quiz?.correctAnswers || []).join(', ')}
                         </div>
@@ -894,13 +894,13 @@ function PropertiesPanel() {
     return (
         <div
             data-properties-panel // Add this identifier
-            className=" border-l  w-2/6 min-w-[300px] border-gray-200 shadow-md bg-white flex flex-col space-y-6 overflow-y-auto max-h-screen
+            className=" border-l  w-2/6 min-w-[300px] border-gray-200 shadow-md bg-background flex flex-col space-y-6 overflow-y-auto max-h-screen
             sticky right-0 top-0 h-screen
             "
         >
             <div className="p-4">
                 <FormProperties />
-                {!activeComponent && <div className="text-center text-gray-500">
+                {!activeComponent && <div className="text-center text-muted-foreground">
                     <p>Select a component to edit its properties</p>
                 </div>}
                 <CommonProperties
