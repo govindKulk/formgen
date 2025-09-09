@@ -27,7 +27,7 @@ function SidebarItem({ type }: { type: FormComponentType }) {
             
             ref={setNodeRef}
             variant="outline"
-            className={`w-full flex items-center gap-2 p-3 bg-gray-50 border rounded-lg dark:bg-gray-800 h-auto cursor-grab transition-all ${isDragging ? 'opacity-30 ring-2 ring-primary' : 'hover:shadow-md'}`}
+            className={`w-full flex items-center gap-2 p-3 bg-muted border rounded-lg h-auto cursor-grab transition-all ${isDragging ? 'opacity-30 ring-2 ring-primary' : 'hover:shadow-md'}`}
             {...listeners}
             {...attributes}
         >
@@ -55,8 +55,8 @@ function SidebarItem({ type }: { type: FormComponentType }) {
                     <option>Select option</option>
                     </select>}
                     {type === "Switch" && <div className="flex items-center gap-2">
-                    <div className="w-8 h-4 bg-gray-300 rounded-full relative">
-                        <div className="w-3 h-3 bg-white rounded-full absolute top-0.5 left-0.5"></div>
+                    <div className="w-8 h-4 bg-border rounded-full relative">
+                        <div className="w-3 h-3 bg-background rounded-full absolute top-0.5 left-0.5"></div>
                     </div>
                     <span className="text-xs">Switch</span>
                     </div>}
@@ -65,11 +65,11 @@ function SidebarItem({ type }: { type: FormComponentType }) {
                         <div className="text-xs font-medium mb-1">Question?</div>
                         <div className="grid grid-cols-1 gap-1">
                             <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 border border-gray-400 rounded-full"></div>
+                                <div className="w-2 h-2 border border-border rounded-full"></div>
                                 <span className="text-[10px]">Option A</span>
                             </div>
                             <div className="flex items-center gap-1">
-                                <div className="w-2 h-2 border border-gray-400 rounded-full"></div>
+                                <div className="w-2 h-2 border border-border rounded-full"></div>
                                 <span className="text-[10px]">Option B</span>
                             </div>
                         </div>

@@ -60,17 +60,17 @@ interface FormContentProps {
             <div>
                 <div className="flex justify-between items-center mb-4">
                     <div>
-                        <h2 className="text-2xl py-2 font-semibold">
+                        <h2 className="text-2xl py-2 font-semibold text-card-foreground">
                             {title}
                         </h2>
-                        <p className="text-sm text-gray-600 mb-4">
+                        <p className="text-sm text-muted-foreground mb-4">
                             {currentStep?.stepTitle} ({currentStepIndex + 1} of {steps.length})
                         </p>
                     </div>
                     <button
                         onClick={() => setIsPreviewMode(!isPreviewMode)}
-                        className="flex items-center gap-2 p-2 border rounded-[100%] border-zinc-800  text-zinc-800 -sm hover:bg-zinc-800
-                        hover:text-white cursor-pointer transition-all duration-200 shadow-lg hover:shadow-md"
+                        className="flex items-center gap-2 p-2 border rounded-full border-border text-foreground hover:bg-muted
+                        cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
                     >
                         {isPreviewMode ? (
                             <>
@@ -383,7 +383,7 @@ function FormCanvas({
                         {isPreviewMode ? (
                             <FormWrapper onSubmit={handleFormSubmit} className="max-w-lg mx-auto">
                                 <main
-                                    className={`p-8 rounded-lg border-2 bg-white max-w-lg mx-auto h-fit min-h-[600px] relative`}
+                                    className={`p-8 rounded-lg border-2 bg-card border-border max-w-lg mx-auto h-fit min-h-[600px] relative`}
                                 >
                                     <FormContent 
                                         title={title}
@@ -401,7 +401,7 @@ function FormCanvas({
                                 ref={setNodeRef}
                                 onClick={handleCanvasClick}
                                 className={`flex-1 p-8 rounded-lg border-2 border-dashed max-w-lg mx-auto transition-colors h-fit min-h-[600px] relative
-                                            ${isOver ? 'border-primary bg-primary/10' : 'border-gray-300 bg-white'}`}
+                                            ${isOver ? 'border-primary bg-primary/10' : 'border-border bg-card'}`}
                             >
                                 <FormContent
                                     title={title}
