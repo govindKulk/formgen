@@ -8,21 +8,29 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId: clerkUserId } = await auth();
     
-    if (!userId) {
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id: formId } = await params;
 
-    // Verify the user owns this form
+    // Get the internal user ID from clerkUserId
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkUserId },
+      select: { id: true },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Verify the user owns this form using internal user ID
     const form = await prisma.form.findFirst({
       where: {
         id: formId,
-        user: {
-          clerkUserId: userId
-        }
+        userId: dbUser.id, // Use internal user ID
       }
     });
 

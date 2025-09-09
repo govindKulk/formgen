@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       data: {
         description: body.description || '',
         title: body.content.title || 'My Form',
-        primaryColor: body.content.primaryColor || '#3b82f6',
+        primaryColor: body.content.theme?.primaryColor || '#3b82f6',
         submissionMessage: body.content.submissionMessage || 'Form submitted successfully!',
         content: JSON.parse(JSON.stringify(body.content)), 
         published: body.published || false,

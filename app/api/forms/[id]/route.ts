@@ -104,7 +104,7 @@ export async function PUT(
     // Handle content updates
     if (body.content) {
       updateData.title = body.content.title;
-      updateData.primaryColor = body.content.primaryColor;
+      updateData.primaryColor = body.content.theme?.primaryColor;
       updateData.submissionMessage = body.content.submissionMessage;
       updateData.content = JSON.parse(JSON.stringify(body.content));
     }
