@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Code, Share2, BarChart3, Shield, Zap, ArrowRight, Play } from "lucide-react";
+import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -215,6 +216,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
