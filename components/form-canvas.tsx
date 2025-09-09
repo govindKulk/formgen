@@ -17,9 +17,25 @@ import {
   FormButton, 
   FormLabel 
 } from './form-fields-enhanced';
-import { PlusIcon, Eye, Edit3 } from 'lucide-react';
+import { PlusIcon, Eye, Edit3, ArrowLeft, Save, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { renderComponent } from '@/lib/helper';
+import { Badge } from '@/components/ui/badge';
+import { FormSettingsDropdown } from '@/components/form-settings-dropdown';
+
+interface FormCanvasProps {
+  formId: string;
+  formTitle: string;
+  isPublished: boolean;
+  shareUrl: string;
+  isSaving: boolean;
+  hasUnsavedChanges: boolean;
+  onBack: () => void;
+  onSave: () => void;
+  onTogglePublish: () => Promise<void>;
+  onToggleAnonymous: (allow: boolean) => Promise<void>;
+  onToggleDuplicates: (allow: boolean) => Promise<void>;
+}
 
 interface FormContentProps {
   title: string;
@@ -200,7 +216,19 @@ function DropZone({ index }: { index: number }) {
 //   }
 // };
 
-function FormCanvas() {
+function FormCanvas({
+  formId,
+  formTitle,
+  isPublished,
+  shareUrl,
+  isSaving,
+  hasUnsavedChanges,
+  onBack,
+  onSave,
+  onTogglePublish,
+  onToggleAnonymous,
+  onToggleDuplicates
+}: FormCanvasProps) {
     const { 
         steps, 
         currentStepIndex, 
@@ -275,7 +303,67 @@ function FormCanvas() {
    
     
     return (
-        <div className='h-fit w-full relative flex flex-col   '>
+        <div className='h-fit w-full relative flex flex-col'>
+            {/* Header with save/publish controls */}
+            <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mb-4">
+                <div className="flex h-14 items-center px-4">
+                    <div className="flex items-center gap-4 flex-1">
+                        <Button variant="ghost" size="sm" onClick={onBack}>
+                            <ArrowLeft className="h-4 w-4 mr-2" />
+                            Back to Forms
+                        </Button>
+                        
+                        <div className="flex items-center gap-2">
+                            <h1 className="font-semibold text-lg truncate max-w-[300px]">
+                                {title || formTitle}
+                            </h1>
+                            <Badge variant={isPublished ? "default" : "secondary"}>
+                                {isPublished ? "Published" : "Draft"}
+                            </Badge>
+                        </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <FormSettingsDropdown
+                            formId={formId}
+                            onTogglePublish={onTogglePublish}
+                            onToggleAnonymous={onToggleAnonymous}
+                            onToggleDuplicates={onToggleDuplicates}
+                            isLoading={isSaving}
+                        />
+                        
+                        {isPublished && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(`/s/${shareUrl || 'preview'}`, '_blank')}
+                            >
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                Preview
+                            </Button>
+                        )}
+                        
+                        <Button
+                            onClick={onSave}
+                            disabled={isSaving || !hasUnsavedChanges}
+                            size="sm"
+                        >
+                            {isSaving ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="h-4 w-4 mr-2" />
+                                    Save
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            </header>
+
             {/* Step Container with Sliding Animation */}
 
             <div className="relative overflow-hidden">

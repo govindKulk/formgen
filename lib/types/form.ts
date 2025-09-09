@@ -42,12 +42,12 @@ export interface FormResponseData {
 // Helper functions to convert between store and database formats
 export function storeToDatabase(storeState: FormStore): StoredFormContent {
   return {
-    steps: storeState.steps,
-    currentStepIndex: storeState.currentStepIndex,
-    title: storeState.title,
-    submissionMessage: storeState.submissionMessage,
-    formData: storeState.formData,
-    theme: storeState.theme,
+    steps: storeState.steps || [],
+    currentStepIndex: storeState.currentStepIndex || 0,
+    title: storeState.title || 'My Form',
+    submissionMessage: storeState.submissionMessage || 'Form submitted successfully!',
+    formData: storeState.formData || {},
+    theme: storeState.theme || {},
 
   };
 }

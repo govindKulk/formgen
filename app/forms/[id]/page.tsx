@@ -10,10 +10,8 @@ import {DndContext, DragEndEvent, DragOverlay, closestCenter, DragStartEvent, Ac
 import { useFormStore, FormComponentType } from '@/store/form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { GripVertical, ArrowLeft, Save, ExternalLink, Eye, EyeOff } from 'lucide-react'
+import { GripVertical } from 'lucide-react'
 import PropertiesPanel from '@/components/properties-panel'
-import { Badge } from '@/components/ui/badge';
-import { FormSettingsDropdown } from '@/components/form-settings-dropdown';
 import { updateFormSettings } from '@/lib/form-actions';
 import toast from 'react-hot-toast';
 
@@ -63,7 +61,15 @@ export default function FormEditPage() {
             hasUnsavedChanges.current = true;
             prevFormStateRef.current = currentFormState;
         }
-    });
+    }, [
+        formStore.steps,
+        formStore.title,
+        formStore.theme.primaryColor,
+        formStore.submissionMessage,
+        formStore.formData,
+        formStore.currentStepIndex,
+        isFormLoaded
+    ]);
 
     // Load form data on mount
     useEffect(() => {
@@ -93,6 +99,7 @@ export default function FormEditPage() {
         if (formId) {
             loadFormData();
         }
+
     }, [formId]);
 
     // Auto-save when component unmounts
@@ -103,6 +110,8 @@ export default function FormEditPage() {
                     console.error('Failed to auto-save form:', error);
                 });
             }
+
+            formStore.resetFormData();
         };
     }, [formId, isFormLoaded]);
 
@@ -275,66 +284,6 @@ export default function FormEditPage() {
 
     return (
         <div className="h-screen flex flex-col">
-            {/* Header with save/publish controls */}
-            <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="flex h-14 items-center px-4">
-                    <div className="flex items-center gap-4 flex-1">
-                        <Button variant="ghost" size="sm" onClick={handleBack}>
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to Forms
-                        </Button>
-                        
-                        <div className="flex items-center gap-2">
-                            <h1 className="font-semibold text-lg truncate max-w-[300px]">
-                                {formStore.title || formTitle}
-                            </h1>
-                            <Badge variant={isPublished ? "default" : "secondary"}>
-                                {isPublished ? "Published" : "Draft"}
-                            </Badge>
-                        </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                        <FormSettingsDropdown
-                            formId={formId}
-                            onTogglePublish={handleTogglePublish}
-                            onToggleAnonymous={handleToggleAnonymous}
-                            onToggleDuplicates={handleToggleDuplicates}
-                            isLoading={isSaving}
-                        />
-                        
-                        {isPublished && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => window.open(`/s/${shareUrl || 'preview'}`, '_blank')}
-                            >
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Preview
-                            </Button>
-                        )}
-                        
-                        <Button
-                            onClick={handleSave}
-                            disabled={isSaving || !hasUnsavedChanges.current}
-                            size="sm"
-                        >
-                            {isSaving ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save
-                                </>
-                            )}
-                        </Button>
-                    </div>
-                </div>
-            </header>
-
             {/* Original 3-panel layout with DnD */}
             <div className="flex-1">
                 <SidebarProvider>
@@ -345,7 +294,19 @@ export default function FormEditPage() {
                     >
                         <div className='flex gap-4 w-full p-4 h-full justify-between'>
                             <FormCreateSidebar/>
-                            <FormCanvas/>
+                            <FormCanvas
+                                formId={formId}
+                                formTitle={formTitle}
+                                isPublished={isPublished}
+                                shareUrl={shareUrl}
+                                isSaving={isSaving}
+                                hasUnsavedChanges={hasUnsavedChanges.current}
+                                onBack={handleBack}
+                                onSave={handleSave}
+                                onTogglePublish={handleTogglePublish}
+                                onToggleAnonymous={handleToggleAnonymous}
+                                onToggleDuplicates={handleToggleDuplicates}
+                            />
                             <PropertiesPanel/>
                         </div>
                         <DragOverlay>

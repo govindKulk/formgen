@@ -179,15 +179,15 @@ export function ThemeCustomization({ formId }: ThemeCustomizationProps) {
                   >
                     <span className="flex gap-1">
                       <span
-                        className="w-5 h-5 rounded-full border shadow-xl "
+                        className="w-2 sm:w-4  h-2 sm:h-4  rounded-full border shadow-xl "
                         style={{ backgroundColor: preset.primary }}
                       />
                       <span
-                        className="w-5 h-5 rounded-full border shadow-xl "
+                        className="w-2 sm:w-4  h-2 sm:h-4  rounded-full border shadow-xl "
                         style={{ backgroundColor: preset.background }}
                       />
                       <span
-                        className="w-5 h-5 rounded-full border shadow-xl "
+                        className="w-2 sm:w-4  h-2 sm:h-4  rounded-full border shadow-xl "
                         style={{ backgroundColor: preset.textColor }}
                       />
                     </span>
