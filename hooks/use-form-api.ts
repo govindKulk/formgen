@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useFormStore } from '@/store/form';
 import { FormCreateData, FormResponseData, FormUpdateData, storeToDatabase } from '@/lib/types/form';
 import { FormResponse } from '@prisma/client';
+import { nanoid } from 'nanoid';
 
 interface UseFormApiProps {
   onSuccess?: (message: string) => void;
@@ -11,15 +12,75 @@ interface UseFormApiProps {
 export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const formState = useFormStore();
+
+  // saves the current form state to the database
+  const createForm = useCallback(async (formTitle: string) => {
+    setIsSaving(true);
+    try {
+      // const formContent = storeToDatabase(formState);
+      if (!formTitle) {
+        throw new Error('Form title is required for new forms');
+      }
+
+      const cleanContent = {
+        steps: [{
+          id: nanoid(),
+          stepTitle: "First Step",
+          components: []
+        }],
+        currentStepIndex: 0,
+        title: formTitle || 'My Form',
+        submissionMessage: 'Form submitted successfully!',
+        formData: {},
+        theme: {
+          primaryColor: '#3b82f6',
+          backgroundColor: '#ffffff',
+          textColor: '#000000',
+          brandLogo: undefined,
+          showPoweredBy: true
+        }
+      };
+
+
+
+
+
+      const createData: FormCreateData = {
+        title: formTitle,
+        content: cleanContent,
+      };
+
+      const response = await fetch('/api/forms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(createData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create form');
+      }
+
+      const newForm = await response.json();
+      onSuccess?.('Form created successfully!');
+      return newForm;
+
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to save form';
+      onError?.(message);
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  }, [formState, onSuccess, onError]);
 
   // saves the current form state to the database
   const saveForm = useCallback(async (formId?: string, formTitle?: string) => {
     setIsSaving(true);
     try {
       const formContent = storeToDatabase(formState);
-      
+
       if (formId) {
         // Update existing form
         const updateData: FormUpdateData = {
@@ -42,10 +103,10 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
         return updatedForm;
       } else {
 
-        if(!formTitle || !formContent) {
-            throw new Error('Form title and content are required for new forms');
+        if (!formTitle || !formContent) {
+          throw new Error('Form title and content are required for new forms');
         }
-    
+
 
         const createData: FormCreateData = {
           title: formTitle,
@@ -80,16 +141,16 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/forms/${formId}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to load form');
       }
 
       const form = await response.json();
-      
+
       // Update the form store with loaded data
       const { content } = form;
-      
+
       // Load complete state into store
       formState.loadFormState({
         steps: content.steps,
@@ -99,7 +160,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
         submissionMessage: content.submissionMessage,
         formData: content.formData,
       });
-      
+
       return form;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load form';
@@ -115,7 +176,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
     setIsLoading(true);
     try {
       const response = await fetch('/api/forms');
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch forms');
       }
@@ -132,6 +193,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
 
   // Delete a form
   const deleteForm = useCallback(async (formId: string) => {
+    setIsLoading(true);
     try {
       const response = await fetch(`/api/forms/${formId}`, {
         method: 'DELETE',
@@ -147,8 +209,10 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
       const message = error instanceof Error ? error.message : 'Failed to delete form';
       onError?.(message);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
-  }, [onSuccess, onError]);
+  }, [onSuccess, onError, isLoading]);
 
   // Publish/unpublish a form
   const togglePublish = useCallback(async (formId: string, published: boolean) => {
@@ -174,25 +238,25 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
   }, [onSuccess, onError]);
 
   // load form for the public users
-  const loadPublicForm = useCallback(async (formId: string) =>{
+  const loadPublicForm = useCallback(async (formId: string) => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/forms/public/${formId}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to load form');
       }
 
       const form = await response.json();
-      
+
       // Update the form store with loaded data
       const { content } = form;
-      
+
       console.log('Loading public form content:', content); // Debug log
-      
+
       // Reset form data first to ensure clean state
       formState.resetFormData();
-      
+
       // Load complete state into store
       formState.loadFormState({
         steps: content.steps,
@@ -202,7 +266,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
         submissionMessage: content.submissionMessage,
         formData: {}, // Start with empty form data for public forms
       });
-      
+
       const message = 'Form loaded successfully';
       onSuccess?.(message);
       return form;
@@ -250,6 +314,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
   return {
     isLoading,
     isSaving,
+    createForm,
     saveForm,
     loadForm,
     getForms,

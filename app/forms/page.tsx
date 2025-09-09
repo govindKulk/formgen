@@ -46,7 +46,7 @@ export default function FormsPage() {
   
   const router = useRouter();
   
-  const { getForms, saveForm, deleteForm, togglePublish, isLoading, isSaving } = useFormApi({
+  const { getForms, createForm, deleteForm, togglePublish, isLoading, isSaving } = useFormApi({
     onSuccess: (message) => {
       console.log('Success:', message);
       loadForms(); // Refresh the forms list
@@ -73,7 +73,7 @@ export default function FormsPage() {
     if (!newFormTitle.trim()) return;
     
     try {
-      const newForm = await saveForm(undefined, newFormTitle);
+      const newForm = await createForm(newFormTitle);
       setIsCreateModalOpen(false);
       setNewFormTitle('');
       // Navigate to the new form
