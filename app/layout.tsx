@@ -46,22 +46,39 @@ export default function RootLayout({
               toastOptions={{
                 duration: 4000,
                 style: {
-                  background: 'hsl(var(--popover))',
-                  color: 'hsl(var(--popover-foreground))',
-                  border: '1px solid hsl(var(--border))',
+                  background: 'var(--background)',
+                  color: 'var(--foreground)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  backdropFilter: 'blur(8px)',
                 },
                 success: {
                   duration: 3000,
+                  style: {
+                    background: 'var(--background)',
+                    color: 'var(--foreground)',
+                    border: '1px solid hsl(142 76% 36%)',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(34, 197, 94, 0.2)',
+                  },
                   iconTheme: {
-                    primary: '#4ade80',
-                    secondary: 'hsl(var(--popover-foreground))',
+                    primary: 'hsl(142 76% 36%)',
+                    secondary: 'var(--background)',
                   },
                 },
                 error: {
                   duration: 5000,
+                  style: {
+                    background: 'var(--background)',
+                    color: 'var(--foreground)',
+                    border: '1px solid hsl(0 84% 60%)',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)',
+                  },
                   iconTheme: {
-                    primary: '#ef4444',
-                    secondary: 'hsl(var(--popover-foreground))',
+                    primary: 'hsl(0 84% 60%)',
+                    secondary: 'var(--background)',
                   },
                 },
               }}

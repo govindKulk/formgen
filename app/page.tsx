@@ -18,7 +18,7 @@ export default function Home() {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 leading-tight">
               Build Multi-Step Forms
               <br />
-              <span className="text-green-600">Without Code</span>
+              <span className="text-primary">Without Code</span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
               Create sophisticated forms with conditional logic, export framework-ready code, or share
@@ -28,7 +28,7 @@ export default function Home() {
               <Button 
                 asChild
                 size="lg"
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
                 <Link href="/forms" className="flex items-center gap-2">
                   Start Building Forms
@@ -38,7 +38,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/20 px-8 py-4 rounded-full text-lg font-medium transition-all duration-200"
+                className="border-primary text-primary hover:bg-primary/10 px-8 py-4 rounded-full text-lg font-medium transition-all duration-200"
               >
                 <Play className="w-5 h-5 mr-2" />
                 Watch Demo
@@ -49,10 +49,32 @@ export default function Home() {
         
         {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-green-200 dark:bg-green-700/50 rounded-full light:mix-blend-multiply filter blur-sm opacity-20 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 dark:bg-blue-700/50 rounded-full light:mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200 dark:bg-purple-700/50 rounded-full light:mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-4000"></div>
-          <div className="absolute bottom-20 right-20 w-72 h-72 bg-pink-200 dark:bg-pink-700/50 rounded-full light:mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-6000"></div>
+          {/* Large floating blobs */}
+          <div className="absolute top-20 left-10 w-72 h-72 bg-green-200 dark:bg-green-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 dark:bg-blue-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200 dark:bg-purple-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute bottom-20 right-20 w-72 h-72 bg-pink-200 dark:bg-pink-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-6000"></div>
+          
+          {/* Smaller floating elements */}
+          <div className="absolute top-32 left-1/4 w-16 h-16 bg-yellow-300 dark:bg-yellow-400/60 rounded-full opacity-30 animate-float animation-delay-1000"></div>
+          <div className="absolute top-60 right-1/4 w-12 h-12 bg-indigo-300 dark:bg-indigo-400/60 rounded-full opacity-40 animate-float animation-delay-3000"></div>
+          <div className="absolute bottom-32 left-1/3 w-20 h-20 bg-orange-300 dark:bg-orange-400/60 rounded-full opacity-25 animate-bounce-slow animation-delay-2000"></div>
+          <div className="absolute bottom-40 right-1/3 w-14 h-14 bg-emerald-300 dark:bg-emerald-400/60 rounded-full opacity-35 animate-bounce-slow animation-delay-5000"></div>
+          
+          {/* Geometric shapes */}
+          <div className="absolute top-1/4 left-1/2 w-8 h-8 bg-primary/40 rotate-45 animate-spin-slow"></div>
+          <div className="absolute top-1/3 right-1/5 w-6 h-6 bg-purple-400/50 rotate-12 animate-pulse-slow animation-delay-1000"></div>
+          <div className="absolute bottom-1/4 left-1/5 w-10 h-10 bg-blue-400/40 rounded-full animate-pulse-slow animation-delay-3000"></div>
+          
+          {/* Particles */}
+          <div className="absolute top-1/2 left-1/6 w-2 h-2 bg-green-500/60 rounded-full animate-float animation-delay-4000"></div>
+          <div className="absolute top-3/4 right-1/6 w-3 h-3 bg-purple-500/60 rounded-full animate-float animation-delay-1000"></div>
+          <div className="absolute top-1/5 left-3/4 w-2 h-2 bg-blue-500/60 rounded-full animate-bounce-slow animation-delay-2000"></div>
+          <div className="absolute bottom-1/3 right-2/3 w-3 h-3 bg-pink-500/60 rounded-full animate-bounce-slow animation-delay-6000"></div>
+          
+          {/* Subtle gradient orbs */}
+          <div className="absolute top-16 right-1/3 w-32 h-32 bg-gradient-to-r from-green-200 to-blue-200 dark:from-green-400/30 dark:to-blue-400/30 rounded-full opacity-20 animate-pulse-slow animation-delay-2000"></div>
+          <div className="absolute bottom-16 left-1/2 w-40 h-40 bg-gradient-to-r from-purple-200 to-pink-200 dark:from-purple-400/30 dark:to-pink-400/30 rounded-full opacity-15 animate-pulse-slow animation-delay-4000"></div>
         </div>
       </section>
 
@@ -60,7 +82,7 @@ export default function Home() {
       <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <p className="text-green-600 font-semibold text-lg mb-4">Features</p>
+            <p className="text-primary font-semibold text-lg mb-4">Features</p>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Everything You Need to Build Forms
             </h2>
@@ -169,7 +191,7 @@ export default function Home() {
       <section className="py-24 bg-muted/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <p className="text-green-600 font-semibold text-lg mb-4">How It Works</p>
+            <p className="text-primary font-semibold text-lg mb-4">How It Works</p>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               From Idea to Form in 3 Steps
             </h2>
@@ -182,8 +204,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {/* Step 1 */}
             <div className="text-center">
-              <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <span className="text-3xl font-bold text-white">1</span>
+              <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <span className="text-3xl font-bold text-primary-foreground">1</span>
               </div>
               <h3 className="text-2xl font-bold text-foreground mb-4">Design Your Form</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -194,8 +216,8 @@ export default function Home() {
 
             {/* Step 2 */}
             <div className="text-center">
-              <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <span className="text-3xl font-bold text-white">2</span>
+              <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <span className="text-3xl font-bold text-primary-foreground">2</span>
               </div>
               <h3 className="text-2xl font-bold text-foreground mb-4">Export or Share</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -205,8 +227,8 @@ export default function Home() {
 
             {/* Step 3 */}
             <div className="text-center">
-              <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <span className="text-3xl font-bold text-white">3</span>
+              <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <span className="text-3xl font-bold text-primary-foreground">3</span>
               </div>
               <h3 className="text-2xl font-bold text-foreground mb-4">Collect & Analyze</h3>
               <p className="text-muted-foreground leading-relaxed">
