@@ -6,7 +6,7 @@ import { useFormApi } from '@/hooks/use-form-api';
 import FormCanvas from '@/components/form-canvas'
 import FormCreateSidebar from '@/components/form-create-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import {DndContext, DragEndEvent, DragOverlay, closestCenter, DragStartEvent, Active} from '@dnd-kit/core'
+import {DndContext, DragEndEvent, DragOverlay, closestCenter, DragStartEvent, Active, MouseSensor, TouchSensor, useSensor, useSensors} from '@dnd-kit/core'
 import { useFormStore, FormComponentType } from '@/store/form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,7 @@ import { GripVertical } from 'lucide-react'
 import PropertiesPanel from '@/components/properties-panel'
 import { updateFormSettings } from '@/lib/form-actions';
 import toast from 'react-hot-toast';
+import { ResponsiveLayout } from '@/components/responsive-layout';
 
 export default function FormEditPage() {
     const params = useParams();
@@ -40,6 +41,22 @@ export default function FormEditPage() {
     // Original DnD functionality
     const {addComponent, steps, currentStepIndex, moveComponent} = useFormStore();
     const [activeItem, setActiveItem] = useState<Active | null>(null);
+    
+    // Configure sensors for better touch support
+    const mouseSensor = useSensor(MouseSensor, {
+        activationConstraint: {
+            distance: 8,
+        },
+    });
+    
+    const touchSensor = useSensor(TouchSensor, {
+        activationConstraint: {
+            delay: 200,
+            tolerance: 8,
+        },
+    });
+    
+    const sensors = useSensors(mouseSensor, touchSensor);
     
     // Get form store to track changes
     const formStore = useFormStore();
@@ -229,20 +246,20 @@ export default function FormEditPage() {
         // If dragging from sidebar
         if (activeData?.type && typeof activeData.type === 'string') {
             return (
-                <div className="flex items-center gap-2 p-3 bg-white border rounded-lg shadow-lg opacity-95 pointer-events-none">
+                <div className="flex items-center gap-2 p-3 bg-card border border-border rounded-lg shadow-lg opacity-95 pointer-events-none">
                     <GripVertical className="h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium">{activeData.type}</span>
+                        <span className="text-sm font-medium text-foreground">{activeData.type}</span>
                         <div className="w-full">
                             {activeData.type === "Input" && <Input className="h-6 text-xs pointer-events-none" placeholder="Type here..." />}
                             {activeData.type === "Button" && <Button size="sm" className="h-6 text-xs pointer-events-none">Click me</Button>}
-                            {activeData.type === "Textarea" && <div className="border rounded p-1 text-xs w-32 h-6 flex items-center">Textarea</div>}
-                            {activeData.type === "Checkbox" && <div className="flex items-center gap-1"><input type="checkbox" className="pointer-events-none" /><span className="text-xs">Checkbox</span></div>}
-                            {activeData.type === "Select" && <select className="border rounded px-1 text-xs h-6 w-24 pointer-events-none"><option>Select</option></select>}
-                            {activeData.type === "Switch" && <div className="flex items-center gap-1"><div className="w-6 h-3 bg-gray-300 rounded-full"><div className="w-2 h-2 bg-white rounded-full mt-0.5 ml-0.5"></div></div><span className="text-xs">Switch</span></div>}
-                            {activeData.type === "Label" && <label className="text-xs font-medium">Label text</label>}
-                            {activeData.type === "Dialog" && <div className="border rounded px-2 py-1 text-xs">Dialog</div>}
-                            {activeData.type === "Tooltip" && <div className="border rounded px-2 py-1 text-xs">Tooltip</div>}
+                            {activeData.type === "Textarea" && <div className="border border-border rounded p-1 text-xs w-32 h-6 flex items-center text-foreground bg-background">Textarea</div>}
+                            {activeData.type === "Checkbox" && <div className="flex items-center gap-1"><input type="checkbox" className="pointer-events-none" /><span className="text-xs text-foreground">Checkbox</span></div>}
+                            {activeData.type === "Select" && <select className="border border-border rounded px-1 text-xs h-6 w-24 pointer-events-none bg-background text-foreground"><option>Select</option></select>}
+                            {activeData.type === "Switch" && <div className="flex items-center gap-1"><div className="w-6 h-3 bg-border rounded-full"><div className="w-2 h-2 bg-background rounded-full mt-0.5 ml-0.5"></div></div><span className="text-xs text-foreground">Switch</span></div>}
+                            {activeData.type === "Label" && <label className="text-xs font-medium text-foreground">Label text</label>}
+                            {activeData.type === "Dialog" && <div className="border border-border rounded px-2 py-1 text-xs text-foreground bg-background">Dialog</div>}
+                            {activeData.type === "Tooltip" && <div className="border border-border rounded px-2 py-1 text-xs text-foreground bg-background">Tooltip</div>}
                         </div>
                     </div>
                 </div>
@@ -253,11 +270,11 @@ export default function FormEditPage() {
         if (activeData?.type === 'canvas-item') {
             const component = activeData.formComponent;
             return (
-                <div className="p-3 bg-white border rounded-lg shadow-lg opacity-95 min-w-[150px] max-w-[200px] pointer-events-none">
+                <div className="p-3 bg-card border border-border rounded-lg shadow-lg opacity-95 min-w-[150px] max-w-[200px] pointer-events-none">
                     <div className="flex items-center gap-2">
                         <GripVertical className="h-3 w-3 text-muted-foreground" />
                         <div>
-                            <div className="text-xs font-medium">{component.type}</div>
+                            <div className="text-xs font-medium text-foreground">{component.type}</div>
                             <div className="text-xs text-muted-foreground truncate">
                                 {component.props?.label || `${component.type} Component`}
                             </div>
@@ -284,31 +301,34 @@ export default function FormEditPage() {
 
     return (
         <div className="h-screen flex flex-col">
-            {/* Original 3-panel layout with DnD */}
+            {/* Responsive layout with DnD */}
             <div className="flex-1">
                 <SidebarProvider>
                     <DndContext 
                         onDragStart={handleDragStart}
                         onDragEnd={handleDragEnd}
                         collisionDetection={closestCenter}
+                        sensors={sensors}
                     >
-                        <div className='flex gap-4 w-full p-4 h-full justify-between'>
-                            <FormCreateSidebar/>
-                            <FormCanvas
-                                formId={formId}
-                                formTitle={formTitle}
-                                isPublished={isPublished}
-                                shareUrl={shareUrl}
-                                isSaving={isSaving}
-                                hasUnsavedChanges={hasUnsavedChanges.current}
-                                onBack={handleBack}
-                                onSave={handleSave}
-                                onTogglePublish={handleTogglePublish}
-                                onToggleAnonymous={handleToggleAnonymous}
-                                onToggleDuplicates={handleToggleDuplicates}
-                            />
-                            <PropertiesPanel/>
-                        </div>
+                        <ResponsiveLayout
+                            leftSidebar={<FormCreateSidebar />}
+                            canvas={
+                                <FormCanvas
+                                    formId={formId}
+                                    formTitle={formTitle}
+                                    isPublished={isPublished}
+                                    shareUrl={shareUrl}
+                                    isSaving={isSaving}
+                                    hasUnsavedChanges={hasUnsavedChanges.current}
+                                    onBack={handleBack}
+                                    onSave={handleSave}
+                                    onTogglePublish={handleTogglePublish}
+                                    onToggleAnonymous={handleToggleAnonymous}
+                                    onToggleDuplicates={handleToggleDuplicates}
+                                />
+                            }
+                            rightSidebar={<PropertiesPanel />}
+                        />
                         <DragOverlay>
                             {renderDragOverlay()}
                         </DragOverlay>

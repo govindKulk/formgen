@@ -17,11 +17,12 @@ import {
   FormButton, 
   FormLabel 
 } from './form-fields-enhanced';
-import { PlusIcon, Eye, Edit3, ArrowLeft, Save, ExternalLink } from 'lucide-react';
+import { PlusIcon, Eye, Edit3, ArrowLeft, Save, ExternalLink, ArrowDownNarrowWide, ArrowDown, Triangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { renderComponent } from '@/lib/helper';
 import { Badge } from '@/components/ui/badge';
 import { FormSettingsDropdown } from '@/components/form-settings-dropdown';
+import { useIsMobile, useIsTablet } from '@/hooks/use-media-query';
 
 interface FormCanvasProps {
   formId: string;
@@ -229,6 +230,11 @@ function FormCanvas({
   onToggleAnonymous,
   onToggleDuplicates
 }: FormCanvasProps) {
+    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
+
+    const [mobileSettingsOn, setMobileSettingsOn] = React.useState(false); 
+    
     const { 
         steps, 
         currentStepIndex, 
@@ -305,25 +311,37 @@ function FormCanvas({
     return (
         <div className='h-fit w-full relative flex flex-col'>
             {/* Header with save/publish controls */}
-            <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mb-4">
-                <div className="flex h-14 items-center px-4">
-                    <div className="flex items-center gap-4 flex-1">
-                        <Button variant="ghost" size="sm" onClick={onBack}>
+            <header className={`border-b pb-4 max-w-full  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mb-4 `}>
+                <div className={`flex flex-col max-md:gap-2 md:flex-row md:h-14 items-center ${isMobile ? 'px-2' : 'px-4'}`}>
+                    <div className="flex w-full justify-between md:justify-normal items-center gap-4 flex-1">
+                        <Button variant="ghost" size={isMobile ? "sm" : "sm"} onClick={onBack}>
                             <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to Forms
+                            {isMobile ? "Back" : "Back to Forms"}
                         </Button>
                         
                         <div className="flex items-center gap-2">
-                            <h1 className="font-semibold text-lg truncate max-w-[300px]">
+                            <h1 className={`font-semibold truncate ${isMobile ? 'text-base max-w-[150px]' : 'text-lg max-w-[300px]'}`}>
                                 {title || formTitle}
                             </h1>
-                            <Badge variant={isPublished ? "default" : "secondary"}>
+                            <Badge variant={isPublished ? "default" : "secondary"} className=''>
                                 {isPublished ? "Published" : "Draft"}
                             </Badge>
                         </div>
+
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline"
+                            
+                            size="sm" onClick={() => {setMobileSettingsOn(!mobileSettingsOn)}}>
+                                <Triangle className={`h-4 w-4 ${mobileSettingsOn ? 'rotate-0' : 'rotate-60'} transition-all`} />
+                            </Button>
+                        </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={mobileSettingsOn ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+                    transition={{ type: "tween", duration: 0.2 }}
+                    className={`flex w-full justify-end items-center ${isMobile ? 'gap-1' : 'gap-2'}`}>
                         <FormSettingsDropdown
                             formId={formId}
                             onTogglePublish={onTogglePublish}
@@ -338,8 +356,8 @@ function FormCanvas({
                                 size="sm"
                                 onClick={() => window.open(`/s/${shareUrl || 'preview'}`, '_blank')}
                             >
-                                <ExternalLink className="h-4 w-4 mr-2" />
-                                Preview
+                                <ExternalLink className="h-4 w-4 md:mr-2" />
+                                <span className='max-md:hidden'>Preview</span>
                             </Button>
                         )}
                         
@@ -355,12 +373,12 @@ function FormCanvas({
                                 </>
                             ) : (
                                 <>
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Save
+                                    <Save className="h-4 w-4 md:mr-2" />
+                                    <span className='max-md:hidden'>Save</span>
                                 </>
                             )}
                         </Button>
-                    </div>
+                    </motion.div>
                 </div>
             </header>
 
@@ -381,9 +399,11 @@ function FormCanvas({
                         className="w-full"
                     >
                         {isPreviewMode ? (
-                            <FormWrapper onSubmit={handleFormSubmit} className="max-w-lg mx-auto">
+                            <FormWrapper onSubmit={handleFormSubmit} className={`mx-auto ${isMobile ? 'max-w-full px-2' : 'max-w-lg'}`}>
                                 <main
-                                    className={`p-8 rounded-lg border-2 bg-card border-border max-w-lg mx-auto h-fit min-h-[600px] relative`}
+                                    className={`rounded-lg border-2 bg-card border-border mx-auto h-fit min-h-[600px] relative ${
+                                        isMobile ? 'p-4 max-w-full' : 'p-8 max-w-lg'
+                                    }`}
                                 >
                                     <FormContent 
                                         title={title}
@@ -400,8 +420,9 @@ function FormCanvas({
                             <main
                                 ref={setNodeRef}
                                 onClick={handleCanvasClick}
-                                className={`flex-1 p-8 rounded-lg border-2 border-dashed max-w-lg mx-auto transition-colors h-fit min-h-[600px] relative
-                                            ${isOver ? 'border-primary bg-primary/10' : 'border-border bg-card'}`}
+                                className={`flex-1 rounded-lg border-2 border-dashed mx-auto transition-colors h-fit min-h-[600px] relative
+                                            ${isOver ? 'border-primary bg-primary/10' : 'border-border bg-card'}
+                                            ${isMobile ? 'p-4 max-w-full' : 'p-8 max-w-lg'}`}
                             >
                                 <FormContent
                                     title={title}
@@ -420,7 +441,7 @@ function FormCanvas({
 
             {/* Step Navigation - only show in design mode */}
             {!isPreviewMode && (
-                <div className="mt-6 px-8">
+                <div className={`mt-6 ${isMobile ? 'px-2' : 'px-8'}`}>
                     <StepNavigation />
                 </div>
             )}

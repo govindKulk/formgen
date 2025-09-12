@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Eye, EyeClosed, Trash } from 'lucide-react';
 import { ThemeCustomization } from './theme-customization';
+import { useIsMobile, useIsTablet } from '@/hooks/use-media-query';
 
 const FormProperties: React.FC = () => {
 
@@ -877,6 +878,9 @@ const renderFieldSpecificProperties = (
 };
 
 function PropertiesPanel() {
+    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
+    
     const {
         steps,
         currentStepIndex,
@@ -894,14 +898,15 @@ function PropertiesPanel() {
     return (
         <div
             data-properties-panel // Add this identifier
-            className=" border-l  w-2/6 min-w-[300px] border-gray-200 shadow-md bg-background flex flex-col space-y-6 overflow-y-auto max-h-screen
-            sticky right-0 top-0 h-screen
-            "
+            className={`
+                border-l border-border shadow-md bg-background flex flex-col space-y-6 overflow-y-auto h-full
+                ${isMobile || isTablet ? 'w-full' : 'w-2/6 min-w-[300px] sticky right-0 top-0 max-h-screen'}
+            `}
         >
-            <div className="p-4">
+            <div className={`${isMobile || isTablet ? 'p-3' : 'p-4'}`}>
                 <FormProperties />
                 {!activeComponent && <div className="text-center text-muted-foreground">
-                    <p>Select a component to edit its properties</p>
+                    <p className={`${isMobile ? 'text-sm' : ''}`}>Select a component to edit its properties</p>
                 </div>}
                 <CommonProperties
                     activeComponent={activeComponent}

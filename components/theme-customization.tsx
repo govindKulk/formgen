@@ -282,7 +282,7 @@ export function ThemeCustomization({ formId }: ThemeCustomizationProps) {
                     </Button>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <div className="border-2 flex flex-col items-center border-dashed border-gray-300 rounded-lg p-6 text-center">
                     <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                     <p className="text-sm text-gray-600 mb-2">Upload your brand logo</p>
                     <p className="text-xs text-gray-500 mb-3">
