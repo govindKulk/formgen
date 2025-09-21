@@ -6,7 +6,7 @@ import { useRef } from "react";
 interface ParallaxSectionProps {
   children: React.ReactNode;
   className?: string;
-  variant?: "features" | "steps" | "hero";
+  variant?: "features" | "steps" | "hero" | "footer";
 }
 
 export default function ParallaxSection({ 
@@ -62,13 +62,10 @@ export default function ParallaxSection({
               style={{ y: y2, rotate }}
               className="absolute bottom-16 left-16 w-40 h-40 bg-gradient-to-br from-indigo-200/25 to-violet-200/25 dark:from-indigo-400/20 dark:to-violet-400/20 rounded-full mix-blend-multiply filter blur-xl animate-gentle-sway"
             />
+
             <motion.div
-              style={{ y: y1, scale }}
-              className="absolute top-2/3 right-1/4 w-24 h-24 bg-yellow-300/40 dark:bg-yellow-400/30 rounded-full animate-parallax-drift animation-delay-1000"
-            />
-            <motion.div
-              style={{ y: y3 }}
-              className="absolute top-1/4 left-1/3 w-12 h-12 bg-teal-400/50 dark:bg-teal-400/40 rotate-45 animate-parallax-float animation-delay-3000"
+              style={{ y: y3, scale }}
+              className="absolute top-1/3 perspective-distant scale-3d left-1/3 w-12 h-12 bg-teal-400/50 dark:bg-teal-400/40 rotate-45 animate-parallax-float animation-delay-3000"
             />
           </>
         );
@@ -76,22 +73,22 @@ export default function ParallaxSection({
       default:
         return (
           <>
-            <motion.div
+            {/* <motion.div
               style={{ y: y1, opacity }}
               className="absolute -top-20 -left-20 w-80 h-80 bg-gradient-to-br from-green-300/25 to-blue-300/25 dark:from-green-400/20 dark:to-blue-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-morph"
             />
             <motion.div
               style={{ y: y2, rotate }}
               className="absolute -bottom-20 -right-20 w-72 h-72 bg-gradient-to-br from-purple-300/30 to-pink-300/30 dark:from-purple-400/25 dark:to-pink-400/25 rounded-full mix-blend-multiply filter blur-2xl animate-gentle-sway"
-            />
-            <motion.div
+            /> */}
+            {/* <motion.div
               style={{ y: y1, scale }}
               className="absolute top-1/3 right-1/4 w-32 h-32 bg-yellow-300/40 dark:bg-yellow-400/35 rounded-full animate-parallax-float animation-delay-1500"
             />
             <motion.div
               style={{ y: y3, rotate }}
               className="absolute bottom-1/4 left-1/4 w-28 h-28 bg-cyan-300/45 dark:bg-cyan-400/35 rounded-full animate-parallax-drift animation-delay-2500"
-            />
+            /> */}
           </>
         );
     }
@@ -127,8 +124,8 @@ export default function ParallaxSection({
 
       {/* Content with smooth entrance */}
       <motion.div 
-        className="relative z-10 h-full flex items-center flex-col"
-        style={{ y: useTransform(scrollYProgress, [0, 0.5], [250, 0]) }}
+        className="relative z-10 h-full flex items-center flex-col "
+        style={{ y: useTransform(scrollYProgress, [0,variant === 'footer' ? 0.3 : 0.5], [ 250 , 0]) }}
       >
         {children}
       </motion.div>

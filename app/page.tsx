@@ -32,7 +32,7 @@ export default function Home() {
       
       {/* Global parallax background */}
       <motion.div 
-        className="fixed h-screen inset-0 bg-gradient-to-br from-green-50/80 via-background to-green-50/80 dark:from-green-950/10 dark:via-background dark:to-green-950/10"
+        className="fixed h-screen inset-0 bg-gradient-to-br from-green-50/80 via-background to-green-100/80 dark:from-green-950/10 dark:via-background dark:to-green-950/10"
         style={{ y: backgroundY }}
       />
 
@@ -89,7 +89,7 @@ export default function Home() {
               <span className="text-primary">Without Code</span>
             </motion.h1>
             <motion.p 
-              className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
+              className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed "
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
@@ -153,31 +153,7 @@ export default function Home() {
             transition={{ duration: 2, delay: 2 }}
           />
           
-          {/* Enhanced floating elements */}
-          <motion.div 
-            className="absolute top-32 left-1/4 w-16 h-16 bg-yellow-300 dark:bg-yellow-400/60 rounded-full opacity-30 animate-parallax-float animation-delay-1000"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.3 }}
-            transition={{ duration: 1.5, delay: 0.8 }}
-          />
-          <motion.div 
-            className="absolute top-60 right-1/4 w-12 h-12 bg-indigo-300 dark:bg-indigo-400/60 rounded-full opacity-40 animate-parallax-drift animation-delay-3000"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.4 }}
-            transition={{ duration: 1.5, delay: 1.2 }}
-          />
-          <motion.div 
-            className="absolute bottom-32 left-1/3 w-20 h-20 bg-orange-300 dark:bg-orange-400/60 rounded-full opacity-25 animate-gentle-sway animation-delay-2000"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.25 }}
-            transition={{ duration: 1.5, delay: 1.6 }}
-          />
-          <motion.div 
-            className="absolute bottom-40 right-1/3 w-14 h-14 bg-emerald-300 dark:bg-emerald-400/60 rounded-full opacity-35 animate-morph animation-delay-5000"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.35 }}
-            transition={{ duration: 1.5, delay: 2.2 }}
-          />
+        
         </div>
       </ParallaxSection>
 
@@ -201,15 +177,16 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 grid-rows-2">
             {/* Multi-Step Forms */}
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
+              className=""
             >
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-green-50 to-card dark:from-green-950/20 dark:to-card backdrop-blur-sm">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-green-50 to-card dark:from-green-950/20 dark:to-card backdrop-blur-sm h-full">
                 <CardHeader className="pb-4">
                   <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mb-4">
                     <CheckCircle className="w-6 h-6 text-green-600" />
@@ -232,7 +209,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-blue-50 to-card dark:from-blue-950/20 dark:to-card backdrop-blur-sm">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-blue-50 to-card dark:from-blue-950/20 dark:to-card backdrop-blur-sm h-full">
                 <CardHeader className="pb-4">
                   <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mb-4">
                     <Code className="w-6 h-6 text-blue-600" />
@@ -254,7 +231,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-purple-50 to-card dark:from-purple-950/20 dark:to-card backdrop-blur-sm">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-purple-50 to-card dark:from-purple-950/20 dark:to-card backdrop-blur-sm h-full">
                 <CardHeader className="pb-4">
                   <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center mb-4">
                     <Share2 className="w-6 h-6 text-purple-600" />
@@ -276,7 +253,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-orange-50 to-card dark:from-orange-950/20 dark:to-card backdrop-blur-sm">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-orange-50 to-card dark:from-orange-950/20 dark:to-card backdrop-blur-sm h-full">
                 <CardHeader className="pb-4">
                   <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center mb-4">
                     <BarChart3 className="w-6 h-6 text-orange-600" />
@@ -298,7 +275,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.5 }}
               viewport={{ once: true }}
             >
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-red-50 to-card dark:from-red-950/20 dark:to-card backdrop-blur-sm">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-red-50 to-card dark:from-red-950/20 dark:to-card backdrop-blur-sm h-full">
                 <CardHeader className="pb-4">
                   <div className="w-12 h-12 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mb-4">
                     <Shield className="w-6 h-6 text-red-600" />
@@ -320,7 +297,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.6 }}
               viewport={{ once: true }}
             >
-              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-teal-50 to-card dark:from-teal-950/20 dark:to-card backdrop-blur-sm">
+              <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 bg-gradient-to-br from-teal-50 to-card dark:from-teal-950/20 dark:to-card backdrop-blur-sm h-full">
                 <CardHeader className="pb-4">
                   <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/50 rounded-full flex items-center justify-center mb-4">
                     <Zap className="w-6 h-6 text-teal-600" />
@@ -427,7 +404,7 @@ export default function Home() {
       </ParallaxSection>
 
       {/* Footer with smooth entrance */}
-     <ParallaxSection variant="steps" className="">
+     <ParallaxSection variant="footer" className="">
         <Footer />
       </ParallaxSection>
     </div>
