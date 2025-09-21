@@ -30,15 +30,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <ThemeProvider
+
+    <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
+    <ClerkProvider
+      appearance={{
+        cssLayerName: "clerk"
+      }}
+    >
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          
             <Navbar/>
             {children}
             <Toaster 
@@ -83,9 +89,10 @@ export default function RootLayout({
                 },
               }}
             />
-          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
+
+  </ThemeProvider>
   )
 }
