@@ -123,7 +123,7 @@ export default function FormsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container max-w-screen-xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <Skeleton className="h-8 w-32 mb-2" />
@@ -269,7 +269,7 @@ export default function FormsPage() {
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="sm" className="">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>

@@ -166,6 +166,7 @@ export default function FormEditPage() {
     const handleToggleDuplicates = async (allow: boolean) => {
         const result = await updateFormSettings(formId, { allowDuplicates: allow });
         if (!result.success) {
+            console.error("erorr")
             throw new Error(result.message);
         }
     };
@@ -317,6 +318,7 @@ export default function FormEditPage() {
                                     formId={formId}
                                     formTitle={formTitle}
                                     isPublished={isPublished}
+                                    theme={formStore.theme}
                                     shareUrl={shareUrl}
                                     isSaving={isSaving}
                                     hasUnsavedChanges={hasUnsavedChanges.current}

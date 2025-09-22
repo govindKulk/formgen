@@ -33,7 +33,10 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
         currentStepIndex: 0,
         title: formTitle || 'My Form',
         submissionMessage: 'Form submitted successfully!',
+        acceptsAnonymousResponses: true,
         formData: {},
+        allowDuplicates: false,
+        allowAnonymous: true,
         theme: {
           primaryColor: '#3b82f6',
           backgroundColor: '#ffffff',

@@ -38,7 +38,7 @@ export async function updateFormSettings(
       where: { id: formId },
       data: {
         ...(settings.isPublished !== undefined && { published: settings.isPublished }),
-        ...(settings.allowAnonymous !== undefined && { allowAnonymous: settings.allowAnonymous }),
+        ...(settings.allowAnonymous !== undefined && { acceptsAnonymousResponses: settings.allowAnonymous }),
         ...(settings.allowDuplicates !== undefined && { allowDuplicates: settings.allowDuplicates }),
         updatedAt: new Date(),
       },

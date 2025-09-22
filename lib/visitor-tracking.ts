@@ -10,6 +10,7 @@ interface VisitorTrackingResult {
   success: boolean;
   method: 'redis' | 'database' | 'memory' | 'none';
   error?: string;
+  uniqueVisit?: boolean;
 }
 
 /**
@@ -43,7 +44,7 @@ export async function trackUniqueVisitor(
       return { success: true, method: 'redis' };
     } else if (redisResult.error !== 'Redis not available') {
       // Redis is available but visitor already tracked
-      return { success: false, method: 'redis', error: redisResult.error };
+      return { success: false, method: 'redis', error: redisResult.error, uniqueVisit: false };
     }
   } catch (error) {
     console.warn('Redis tracking failed:', error);
@@ -91,7 +92,7 @@ async function trackWithDatabase(
   visitorIp: string, 
   userAgent?: string,
   visitorEmail?: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<VisitorTrackingResult> {
   
   // Check if this IP/email combination has already visited this form in the configured window
   const windowAgo = new Date(Date.now() - getUniqueVisitorWindowMs());
@@ -120,7 +121,7 @@ async function trackWithDatabase(
     const errorMsg = visitorEmail 
       ? `User ${visitorEmail} from IP ${visitorIp} already tracked within ${VISITOR_TRACKING_CONFIG.UNIQUE_VISITOR_WINDOW_HOURS} hours`
       : `Anonymous user from IP ${visitorIp} already tracked within ${VISITOR_TRACKING_CONFIG.UNIQUE_VISITOR_WINDOW_HOURS} hours`;
-    return { success: false, error: errorMsg };
+    return { success: false, error: errorMsg, uniqueVisit: false, method: 'database'};
   }
 
   // Create new visit record
@@ -136,7 +137,7 @@ async function trackWithDatabase(
   // Increment the visits counter
   await incrementFormVisits(formId);
 
-  return { success: true };
+  return { success: true, method: 'database', uniqueVisit: true };
 }
 
 /**
