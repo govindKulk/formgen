@@ -110,9 +110,10 @@ interface FormWrapperProps {
   children: React.ReactNode;
   onSubmit?: (data: any) => void;
   className?: string;
+  showNavigation?: boolean;
 }
 
-export function FormWrapper({ children, onSubmit, className = "" }: FormWrapperProps) {
+export function FormWrapper({ children, onSubmit, className = "", showNavigation = true }: FormWrapperProps) {
   // Use selective subscription to avoid re-renders when formData changes
   const steps = useFormStore((state) => state.steps);
   const currentStepIndex = useFormStore((state) => state.currentStepIndex);
@@ -282,11 +283,11 @@ export function FormWrapper({ children, onSubmit, className = "" }: FormWrapperP
         }}
       >
         {children}
-        <FormNavigation 
+        {showNavigation && <FormNavigation 
           onNext={syncFormDataToStore}
           onPrev={syncFormDataToStore}
           className="mt-6"
-        />
+        />}
       </form>
     </FormProvider>
   );

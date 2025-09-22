@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FormWrapper } from './form-wrapper'
 import PublicFormContent from './public-form-content'
 import { useFormStore } from '@/store/form'
@@ -6,11 +6,14 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import SubmissionSuccess from './submission-success';
 
 function PublicForm({
-    submitResponse
+    submitResponse,
+    isPreviewMode
 }: {
     submitResponse?: (formId: string, responseData: any) => Promise<void>
+    isPreviewMode: boolean
 }) {
 
     const {
@@ -23,7 +26,11 @@ function PublicForm({
 
     const { id: formShareUrl } = useParams();
     const currentStep = steps[currentStepIndex];
+    const [showSuccessScreen, setShowSuccessScreen] = useState(false);
 
+    if(showSuccessScreen) {
+        return <SubmissionSuccess submissionMessage={"This is the form submission screen."} />
+    }
     // Debug logging
     console.log('PublicForm render:', {
         title,
@@ -44,7 +51,10 @@ function PublicForm({
 
     const handleFormSubmit = async (formData: Record<string, any>) => {
         console.log('Form submission triggered with data:', formData);
-
+        if(isPreviewMode) {
+            setShowSuccessScreen(true);
+            return;
+        }
         if (!submitResponse || !formShareUrl) {
             console.error('Missing submitResponse function or form ID');
             toast.error('Error: Unable to submit form. Missing required data.');
@@ -98,7 +108,7 @@ function PublicForm({
                     flex items-center gap-2 justify-center font-bold
                     ">
                         Powered by <Link href="/" className="text-blue-600 hover:underline">
-                            <Image src={"/logo.svg"} alt="FormGen Logo" width={75} height={18} />
+                            <Image src={"/Logo.svg"} alt="FormGen Logo" width={75} height={18} />
                         </Link>
                     </div>
                 )}

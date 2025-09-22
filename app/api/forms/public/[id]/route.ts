@@ -25,6 +25,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             return NextResponse.json({ error: 'Form not found' }, { status: 404 });
         }
 
+        if(!form.published) {
+            return NextResponse.json({ error: 'Form is not published.' }, { status: 404 });
+        }
+
         // Track unique visitors by IP with comprehensive fallback strategy and email support
         const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                         request.headers.get('x-real-ip') || 
@@ -59,6 +63,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         try {
             const trackingResult = await trackUniqueVisitor(form.id, clientIp, userAgent, visitorEmail);
             console.log('Visitor tracking result:', trackingResult);
+
         } catch (error) {
             console.error('Visitor tracking error:', error);
             // Continue serving the form even if tracking fails
@@ -100,12 +105,38 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             return NextResponse.json({ error: 'Form is not published' }, { status: 403 });
         }
 
+        const {userId: clerkUserId} = await auth();
+        let dbUser = null;
+        if (clerkUserId) {
+            dbUser = await prisma.user.findUnique({
+                where: { clerkUserId: clerkUserId }
+            });
+        }
+
         if (form.acceptsAnonymousResponses) {
+
+            if(!form.allowDuplicates) {
+                const trackingResult = await trackUniqueVisitor(form.id, request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                request.headers.get('x-real-ip') || 
+                'unknown', request.headers.get('user-agent') || '', dbUser?.email || undefined);
+
+                console.log('Visitor tracking result for duplicate check:', trackingResult);
+
+                if (!trackingResult.success && !trackingResult.uniqueVisit && trackingResult.error !== "Invalid or development IP") {
+                    return NextResponse.json({ error: 'You have already submitted a response to this form.' }, { status: 403 });
+                }
+            }
+
             // Handle anonymous response submission
             const responseData = {
                 content: body.content || {},
                 responderIp: request.headers.get('x-forwarded-for'),
                 responderUserAgent: request.headers.get('user-agent'),
+                ...(dbUser && {responderId: dbUser.id,}),
+                ...(dbUser && {responderEmail: dbUser.email}),
+                ...(dbUser && {responderName: dbUser.name}),
+                ...(dbUser && {clerkUserId: dbUser.clerkUserId}),
+                
             }
 
 
@@ -135,7 +166,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 return NextResponse.json({ error: 'User must be authenticated to submit this form' }, { status: 403 });
             }
 
-            const dbUser = await prisma.user.findUnique({
+            let dbUser = await prisma.user.findUnique({
                 where: {
                     clerkUserId: clerkUserId
                 }
@@ -144,6 +175,21 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             if (!dbUser) {
                 return NextResponse.json({ error: 'User not found, please login with correct credentials.' }, { status: 404 });
             }
+
+            if(!form.allowDuplicates) {
+                const existingResponse = await prisma.formResponse.findFirst({
+                    where: {
+                        formId: form.id,
+                        responderId: dbUser.id
+                    }
+                });
+
+                if (existingResponse) {
+                    return NextResponse.json({ error: 'You have already submitted a response to this form.' }, { status: 403 });
+                }
+            }
+
+    
 
             const responseData = {
                 content: body.content || {},

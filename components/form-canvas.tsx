@@ -2,7 +2,7 @@
 
 import { useDroppable } from '@dnd-kit/core';
 import React from 'react';
-import { useFormStore, FormComponent, FormComponentType } from '@/store/form';
+import { useFormStore, FormComponent, FormComponentType, FormTheme } from '@/store/form';
 import { Button, Input, Checkbox, Textarea, Switch, Label } from '@/components/ui/form-fields';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Draggable from './draggable';
@@ -23,6 +23,8 @@ import { renderComponent } from '@/lib/helper';
 import { Badge } from '@/components/ui/badge';
 import { FormSettingsDropdown } from '@/components/form-settings-dropdown';
 import { useIsMobile, useIsTablet } from '@/hooks/use-media-query';
+import PublicFormContent from './public-form-content';
+import PublicForm from './public-form';
 
 interface FormCanvasProps {
   formId: string;
@@ -36,6 +38,7 @@ interface FormCanvasProps {
   onTogglePublish: () => Promise<void>;
   onToggleAnonymous: (allow: boolean) => Promise<void>;
   onToggleDuplicates: (allow: boolean) => Promise<void>;
+  theme: FormTheme
 }
 
 interface FormContentProps {
@@ -46,6 +49,7 @@ interface FormContentProps {
   isPreviewMode: boolean;
   setIsPreviewMode: (isPreview: boolean) => void;
   components: FormComponent[];
+  theme: FormTheme
 }
 
  const FormContent = ({
@@ -55,7 +59,8 @@ interface FormContentProps {
    steps,
    isPreviewMode,
    setIsPreviewMode,
-   components
+   components,
+   theme
  }: FormContentProps) => (
         <>
             <div>
@@ -97,17 +102,22 @@ interface FormContentProps {
                 </div>
             )}
 
+            {isPreviewMode && components.length > 0 && (
+                <PublicForm
+                    isPreviewMode={true}
+                    submitResponse={undefined}
+                />
+            )}
+
+            
+
             {/* If there are components, map over them and render them */}
-            {components.length > 0 && (
+            {!isPreviewMode && components.length > 0 && (
                 <div className="">
                     {!isPreviewMode && <DropZone index={0} />}
                     {components.map((component: FormComponent, index: number) => (
                         <React.Fragment key={component.id}>
-                            {isPreviewMode ? (
-                                <div className="mb-4 py-2 px-2">
-                                    {renderComponent(component, true)}
-                                </div>
-                            ) : (
+                            { (
                                 <Draggable 
                                     formComponentProps={component}
                                     index={index}
@@ -228,7 +238,8 @@ function FormCanvas({
   onSave,
   onTogglePublish,
   onToggleAnonymous,
-  onToggleDuplicates
+  onToggleDuplicates,
+  theme
 }: FormCanvasProps) {
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
@@ -399,7 +410,9 @@ function FormCanvas({
                         className="w-full"
                     >
                         {isPreviewMode ? (
-                            <FormWrapper onSubmit={handleFormSubmit} className={`mx-auto ${isMobile ? 'max-w-full px-2' : 'max-w-lg'}`}>
+                            <div className={`mx-auto ${isMobile ? 'max-w-full px-2' : 'max-w-lg'}`}
+                           
+                            >
                                 <main
                                     className={`rounded-lg border-2 bg-card border-border mx-auto h-fit min-h-[600px] relative ${
                                         isMobile ? 'p-4 max-w-full' : 'p-8 max-w-lg'
@@ -413,9 +426,10 @@ function FormCanvas({
                                         isPreviewMode={isPreviewMode}
                                         setIsPreviewMode={setIsPreviewMode}
                                         components={components}
+                                        theme={theme}
                                     />
                                 </main>
-                            </FormWrapper>
+                            </div>
                         ) : (
                             <main
                                 ref={setNodeRef}
@@ -432,6 +446,7 @@ function FormCanvas({
                                     isPreviewMode={isPreviewMode}
                                     setIsPreviewMode={setIsPreviewMode}
                                     components={components}
+                                    theme={theme}
                                 />
                             </main>
                         )}
