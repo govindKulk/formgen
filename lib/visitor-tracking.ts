@@ -153,15 +153,26 @@ async function incrementFormVisits(formId: string): Promise<void> {
 }
 
 /**
- * Get visitor analytics for a form with email-aware unique counting
+ * Get comprehensive visitor analytics for a form with chart data for Evil Charts
  */
 export async function getFormAnalytics(formId: string) {
   try {
     const form = await prisma.form.findUnique({
       where: { id: formId },
-      select: {
-        visits: true,
-        submissions: true,
+      include: {
+        responses: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            responderName: true,
+            responderEmail: true,
+            responderIp: true,
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        },
         visitRecords: {
           select: {
             visitedAt: true,
@@ -169,9 +180,8 @@ export async function getFormAnalytics(formId: string) {
             visitorEmail: true,
           },
           orderBy: {
-            visitedAt: 'desc'
-          },
-          take: 100 // Last 100 visits
+            visitedAt: 'asc'
+          }
         }
       }
     });
@@ -180,50 +190,109 @@ export async function getFormAnalytics(formId: string) {
       throw new Error('Form not found');
     }
 
-    // Calculate unique visitors in different time periods
+    // Calculate time periods
     const now = new Date();
-    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Count unique visitors (considering IP + email combinations)
-    const uniqueVisitors24h = new Set();
-    const uniqueVisitors7d = new Set();
-    const uniqueVisitors30d = new Set();
+    // Filter recent data
+    const recentVisits = form.visitRecords.filter(visit => visit.visitedAt >= thirtyDaysAgo);
+    const recentSubmissions = form.responses.filter(response => response.createdAt >= thirtyDaysAgo);
 
-    form.visitRecords.forEach(visit => {
-      const visitorKey = visit.visitorEmail 
-        ? `${visit.visitorIp}:${visit.visitorEmail}` 
-        : visit.visitorIp;
-      
-      if (visit.visitedAt >= thirtyDaysAgo) {
-        uniqueVisitors30d.add(visitorKey);
-      }
-      if (visit.visitedAt >= sevenDaysAgo) {
-        uniqueVisitors7d.add(visitorKey);
-      }
-      if (visit.visitedAt >= twentyFourHoursAgo) {
-        uniqueVisitors24h.add(visitorKey);
+    // Process daily data for line chart
+    const dailyData: Record<string, { date: string; visits: number; submissions: number }> = {};
+    
+    // Initialize last 30 days with 0 values
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateKey = date.toISOString().split('T')[0];
+      const displayDate = date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      });
+      dailyData[dateKey] = {
+        date: displayDate,
+        visits: 0,
+        submissions: 0,
+      };
+    }
+
+    // Count visits per day
+    recentVisits.forEach(visit => {
+      const dateKey = visit.visitedAt.toISOString().split('T')[0];
+      if (dailyData[dateKey]) {
+        dailyData[dateKey].visits += 1;
       }
     });
 
+    // Count submissions per day
+    recentSubmissions.forEach(response => {
+      const dateKey = response.createdAt.toISOString().split('T')[0];
+      if (dailyData[dateKey]) {
+        dailyData[dateKey].submissions += 1;
+      }
+    });
+
+    // Convert to array and sort by date (oldest first for chart)
+    const chartData = Object.entries(dailyData)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([_, data]) => data);
+
+    // Calculate unique visitors
+    const uniqueVisitors = new Set();
+    recentVisits.forEach(visit => {
+      const visitorKey = visit.visitorEmail 
+        ? `${visit.visitorIp}:${visit.visitorEmail}` 
+        : visit.visitorIp;
+      uniqueVisitors.add(visitorKey);
+    });
+
+    // Pie chart data for overview
+    const bounceRate = Math.max(0, form.visits - form.submissions);
+    const pieData = [
+      {
+        name: 'Submissions',
+        value: form.submissions,
+        fill: 'hsl(142, 76%, 36%)',
+      },
+      {
+        name: 'Bounced Visits',
+        value: bounceRate,
+        fill: 'hsl(0, 84%, 60%)',
+      },
+    ];
+
+    // Calculate conversion rate
+    const conversionRate = form.visits > 0 ? (form.submissions / form.visits) * 100 : 0;
+
+    // Recent activity (last 7 days)
+    const recentVisitCount = form.visitRecords.filter(visit => visit.visitedAt >= sevenDaysAgo).length;
+    const recentSubmissionCount = form.responses.filter(response => response.createdAt >= sevenDaysAgo).length;
+
     const analytics = {
-      totalVisits: form.visits,
-      totalSubmissions: form.submissions,
-      conversionRate: form.visits > 0 ? (form.submissions / form.visits * 100).toFixed(2) : '0',
-      uniqueVisitors: {
-        last24Hours: uniqueVisitors24h.size,
-        last7Days: uniqueVisitors7d.size,
-        last30Days: uniqueVisitors30d.size,
+      overview: {
+        totalVisits: form.visits,
+        totalSubmissions: form.submissions,
+        uniqueVisitors: uniqueVisitors.size,
+        conversionRate: Math.round(conversionRate * 100) / 100,
+        recentVisits: recentVisitCount,
+        recentSubmissions: recentSubmissionCount,
       },
-      visitorBreakdown: {
-        loggedInUsers: form.visitRecords.filter(v => v.visitorEmail).length,
-        anonymousUsers: form.visitRecords.filter(v => !v.visitorEmail).length,
-      },
-      recentVisits: form.visitRecords.slice(0, 10).map(visit => ({
-        ...visit,
-        isLoggedIn: !!visit.visitorEmail
-      }))
+      chartData,
+      pieData,
+      responses: form.responses.map(response => ({
+        id: response.id,
+        responderName: response.responderName || 'Anonymous',
+        responderEmail: response.responderEmail || 'N/A',
+        submittedAt: response.createdAt,
+        content: response.content,
+      })),
+      form: {
+        id: form.id,
+        title: form.title,
+        published: form.published,
+        createdAt: form.createdAt,
+      }
     };
 
     return analytics;

@@ -278,6 +278,10 @@ export default function FormsPage() {
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push(`/analytics/${form.id}`)}>
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        Analytics
+                      </DropdownMenuItem>
                       {form.published && (
                         <DropdownMenuItem onClick={() => copyShareUrl(form.shareUrl)}>
                           <Copy className="mr-2 h-4 w-4" />
@@ -335,13 +339,28 @@ export default function FormsPage() {
                   {form.published ? "Published" : "Draft"}
                 </Badge>
                 
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => router.push(`/forms/${form.id}`)}
-                >
-                  Edit
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/analytics/${form.id}`);
+                    }}
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/forms/${form.id}`);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
           ))}
