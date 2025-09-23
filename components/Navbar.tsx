@@ -2,8 +2,9 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './ui/button'
-import { SignedIn, SignedOut, UserButton, SignInButton, SignUpButton } from '@clerk/nextjs';
-import { ThemeToggle } from './theme-toggle';
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/nextjs'
+import { ThemeToggle } from './theme-toggle'
+import { CustomUserMenu } from './custom-user-menu'
 
 
 export default function Navbar() {
@@ -65,7 +66,7 @@ export default function Navbar() {
                                     Dashboard
                                 </Link>
                             </Button>
-                            <UserButton />
+                            <CustomUserMenu />
                         </SignedIn>
                     </div>
                 </div>
