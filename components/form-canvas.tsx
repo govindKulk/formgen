@@ -17,7 +17,7 @@ import {
     FormButton,
     FormLabel
 } from './form-fields-enhanced';
-import { PlusIcon, Eye, Edit3, ArrowLeft, Save, ExternalLink, ArrowDownNarrowWide, ArrowDown, Triangle } from 'lucide-react';
+import { PlusIcon, Eye, Edit3, ArrowLeft, Save, ExternalLink, ArrowDownNarrowWide, ArrowDown, Triangle, Trash } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { renderComponent } from '@/lib/helper';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +40,7 @@ interface FormCanvasProps {
     onTogglePublish: () => Promise<void>;
     onToggleAnonymous: (allow: boolean) => Promise<void>;
     onToggleDuplicates: (allow: boolean) => Promise<void>;
+    onDeleteStep: () => void;
     theme: FormTheme
 }
 
@@ -50,6 +51,7 @@ interface FormContentProps {
     steps: any[];
     isPreviewMode: boolean;
     setIsPreviewMode: (isPreview: boolean) => void;
+    onDeleteStep: () => void;
     components: FormComponent[];
     theme: FormTheme
 }
@@ -61,6 +63,7 @@ const FormContent = ({
     steps,
     isPreviewMode,
     setIsPreviewMode,
+    onDeleteStep,
     components,
     theme
 }: FormContentProps) => (
@@ -75,29 +78,42 @@ const FormContent = ({
                         {currentStep?.stepTitle} ({currentStepIndex + 1} of {steps.length})
                     </p>
                 </div>
-                <button
-                    onClick={() => setIsPreviewMode(!isPreviewMode)}
-                    className="flex items-center gap-2 p-2 border rounded-full border-border text-foreground hover:bg-muted
-                        cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
-                >
-                    {isPreviewMode ? (
-                        <>
-                            <Edit3 className="w-4 h-4" />
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setIsPreviewMode(!isPreviewMode)}
+                        className="flex items-center gap-2 p-2 border rounded-full border-border text-foreground hover:bg-muted
+                            cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+                    >
+                        {isPreviewMode ? (
+                            <>
+                                <Edit3 className="w-4 h-4" />
 
-                        </>
-                    ) : (
-                        <>
-                            <Eye className="w-4 h-4" />
+                            </>
+                        ) : (
+                            <>
+                                <Eye className="w-4 h-4" />
 
-                        </>
+                            </>
+                        )}
+                    </button>
+                    
+                    {!isPreviewMode && steps.length > 1 && (
+                        <button
+                            onClick={onDeleteStep}
+                            className="flex items-center gap-2 p-2 border rounded-full border-border text-red-600 hover:bg-red-50 hover:border-red-300
+                                cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+                            title="Delete current step"
+                        >
+                            <Trash className="w-4 h-4" />
+                        </button>
                     )}
-                </button>
+                </div>
             </div>
         </div>
 
         {/* If there are no components, show a placeholder message */}
         {components.length === 0 && (
-            <div className="flex items-center justify-center h-full w-full absolute top-0 left-0">
+            <div className="flex items-center justify-center h-full w-full absolute top-0 left-0 pointer-events-none">
                 <p className="text-center text-muted-foreground">
                     Drag and drop form elements here
                 </p>
@@ -242,6 +258,7 @@ function FormCanvas({
     onTogglePublish,
     onToggleAnonymous,
     onToggleDuplicates,
+    onDeleteStep,
     theme
 }: FormCanvasProps) {
     const isMobile = useIsMobile();
@@ -428,6 +445,7 @@ function FormCanvas({
                                         setIsPreviewMode={setIsPreviewMode}
                                         components={components}
                                         theme={theme}
+                                        onDeleteStep={onDeleteStep}
                                     />
                                 </main>
                             </div>
@@ -447,6 +465,7 @@ function FormCanvas({
                                     isPreviewMode={isPreviewMode}
                                     setIsPreviewMode={setIsPreviewMode}
                                     components={components}
+                                    onDeleteStep={onDeleteStep}
                                     theme={theme}
                                 />
                             </main>

@@ -42,7 +42,7 @@ export default function FormEditPage() {
     });
 
     // Original DnD functionality
-    const {addComponent, steps, currentStepIndex, moveComponent} = useFormStore();
+    const {addComponent, steps, currentStepIndex, moveComponent, removeStep} = useFormStore();
     const [activeItem, setActiveItem] = useState<Active | null>(null);
     
     // Configure sensors for better touch support
@@ -75,7 +75,7 @@ export default function FormEditPage() {
     
     // Initialize debounced save function only once
     useEffect(() => {
-        debouncedSaveForm.current = debouncer(2000, async () => {
+        debouncedSaveForm.current = debouncer(5000, async () => {
             try {
                 console.log("🔄 AUTO-SAVE triggered (debounced) with current state:", formStore.steps?.length || 0, "components");
                 await saveFormRef.current(formId, formTitle);
@@ -102,12 +102,16 @@ export default function FormEditPage() {
 
         const timeoutId = setTimeout(() => {
             const currentFormState = JSON.stringify({
-                steps: formStore.steps,
+                steps: formStore.steps.map((step: any) => ({
+                    id: step.id,
+                    stepTitle: step.stepTitle,
+                    components: step.components
+                })),
                 title: formStore.title,
                 primaryColor: formStore.theme.primaryColor,
                 submissionMessage: formStore.submissionMessage,
                 formData: formStore.formData,
-                currentStepIndex: formStore.currentStepIndex
+                // Don't include currentStepIndex to avoid triggering saves on step navigation
             });
             
             if (isFormLoaded && prevFormStateRef.current !== currentFormState) {
@@ -125,9 +129,9 @@ export default function FormEditPage() {
     }, [
         formStore.steps,
         formStore.title,
+        formStore.theme.primaryColor,
         formStore.submissionMessage,
         formStore.formData,
-        formStore.submissionMessage,
         isFormLoaded,
     ]);
 
@@ -143,12 +147,15 @@ export default function FormEditPage() {
                 
                 // Set initial state for comparison
                 prevFormStateRef.current = JSON.stringify({
-                    steps: form.content.steps,
+                    steps: form.content.steps.map((step: any) => ({
+                        id: step.id,
+                        stepTitle: step.stepTitle,
+                        components: step.components
+                    })),
                     title: form.content.title,
                     primaryColor: form.content.primaryColor,
                     submissionMessage: form.content.submissionMessage,
                     formData: form.content.formData,
-                    currentStepIndex: form.content.currentStepIndex
                 });
             } catch (error) {
                 console.error('Failed to load form:', error);
@@ -218,6 +225,20 @@ export default function FormEditPage() {
         if (!result.success) {
             console.error("erorr")
             throw new Error(result.message);
+        }
+    };
+
+    const handleDeleteStep = () => {
+        if (steps.length <= 1) {
+            toast.error('Cannot delete the last step');
+            return;
+        }
+        
+        if (confirm('Are you sure you want to delete this step? This action cannot be undone.')) {
+            console.log("🗑️ DELETING STEP:", steps[currentStepIndex].stepTitle);
+            removeStep(steps[currentStepIndex].id);
+            toast.success('Step deleted successfully');
+            // Auto-save will be triggered by the useEffect detecting the change
         }
     };
 
@@ -379,6 +400,7 @@ export default function FormEditPage() {
                                     onTogglePublish={handleTogglePublish}
                                     onToggleAnonymous={handleToggleAnonymous}
                                     onToggleDuplicates={handleToggleDuplicates}
+                                    onDeleteStep={handleDeleteStep}
                                 />
                             }
                             rightSidebar={<PropertiesPanel />}
