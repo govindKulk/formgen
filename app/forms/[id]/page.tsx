@@ -64,14 +64,21 @@ export default function FormEditPage() {
     // Get form store to track changes
     const formStore = useFormStore();
 
+    // Create stable debounced save function that doesn't depend on changing saveForm
     const debouncedSaveForm = useRef<{ (...args: any[]): void; cancel(): void } | null>(null);
+    const saveFormRef = useRef(saveForm);
     
-    // Initialize debounced save function
+    // Keep saveForm ref current
     useEffect(() => {
-        debouncedSaveForm.current = debouncer(10000, async () => {
+        saveFormRef.current = saveForm;
+    }, [saveForm]);
+    
+    // Initialize debounced save function only once
+    useEffect(() => {
+        debouncedSaveForm.current = debouncer(2000, async () => {
             try {
-                console.log("Auto-saving form with current state:", formStore.steps);
-                await saveForm(formId, formTitle);
+                console.log("🔄 AUTO-SAVE triggered (debounced) with current state:", formStore.steps?.length || 0, "components");
+                await saveFormRef.current(formId, formTitle);
                 toast.success('Form auto-saved');
                 hasUnsavedChanges.current = false;
             } catch(error){
@@ -83,7 +90,7 @@ export default function FormEditPage() {
         return () => {
             debouncedSaveForm.current?.cancel();
         };
-    }, [formId, formTitle, saveForm]);
+    }, [formId, formTitle]); // Remove saveForm from dependencies
     
     // Track changes in form store with proper timing
     const prevFormStateRef = useRef(JSON.stringify(formStore));
@@ -104,9 +111,9 @@ export default function FormEditPage() {
             });
             
             if (isFormLoaded && prevFormStateRef.current !== currentFormState) {
-                console.log("Form has unsaved changes, triggering auto-save");
-                console.log("Previous state:", JSON.parse(prevFormStateRef.current));
-                console.log("Current state:", JSON.parse(currentFormState));
+                console.log("📝 Form changes detected, triggering AUTO-SAVE debouncer");
+                console.log("Previous components count:", JSON.parse(prevFormStateRef.current)?.steps?.[0]?.components?.length || 0);
+                console.log("Current components count:", JSON.parse(currentFormState)?.steps?.[0]?.components?.length || 0);
                 
                 debouncedSaveForm.current?.();
                 hasUnsavedChanges.current = true;
@@ -160,7 +167,8 @@ export default function FormEditPage() {
     useEffect(() => {
         return () => {
             if (hasUnsavedChanges.current && isFormLoaded) {
-                saveForm(formId).catch(error => {
+                console.log("🚪 UNMOUNT SAVE triggered");
+                saveFormRef.current(formId).catch(error => {
                     console.error('Failed to auto-save form:', error);
                 });
             }
@@ -169,12 +177,15 @@ export default function FormEditPage() {
             // DON'T reset form data - this was causing the clearing issue
             // formStore.resetFormData();
         };
-    }, [formId, isFormLoaded, saveForm]);
+    }, [formId, isFormLoaded]);
 
     const handleSave = async () => {
         try {
-            await saveForm(formId);
+            // For manual saves, bypass debouncing and save immediately
+            console.log("💾 MANUAL SAVE triggered");
+            await saveFormRef.current(formId);
             toast.success('Form saved successfully');
+            hasUnsavedChanges.current = false;
         } catch (error) {
             console.error('Failed to save form:', error);
             toast.error('Failed to save form');
