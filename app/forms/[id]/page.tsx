@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useFormApi } from '@/hooks/use-form-api';
 import FormCanvas from '@/components/form-canvas'
@@ -15,11 +15,14 @@ import PropertiesPanel from '@/components/properties-panel'
 import { updateFormSettings } from '@/lib/form-actions';
 import toast from 'react-hot-toast';
 import { ResponsiveLayout } from '@/components/responsive-layout';
+import { debouncer } from '@/lib/utils';
 
 export default function FormEditPage() {
     const params = useParams();
     const router = useRouter();
     const formId = params.id as string;
+
+    const [isPreviewMode, setIsPreviewMode] = useState(false);
     
     // API integration state
     const [isFormLoaded, setIsFormLoaded] = useState(false);
@@ -60,32 +63,65 @@ export default function FormEditPage() {
     
     // Get form store to track changes
     const formStore = useFormStore();
+
+    const debouncedSaveForm = useRef<{ (...args: any[]): void; cancel(): void } | null>(null);
     
-    // Track changes in form store
+    // Initialize debounced save function
+    useEffect(() => {
+        debouncedSaveForm.current = debouncer(10000, async () => {
+            try {
+                console.log("Auto-saving form with current state:", formStore.steps);
+                await saveForm(formId, formTitle);
+                toast.success('Form auto-saved');
+                hasUnsavedChanges.current = false;
+            } catch(error){
+                console.error('Auto-save failed:', error);
+                toast.error('Failed to auto-save form');
+            }
+        });
+
+        return () => {
+            debouncedSaveForm.current?.cancel();
+        };
+    }, [formId, formTitle, saveForm]);
+    
+    // Track changes in form store with proper timing
     const prevFormStateRef = useRef(JSON.stringify(formStore));
     
     useEffect(() => {
-        const currentFormState = JSON.stringify({
-            steps: formStore.steps,
-            title: formStore.title,
-            primaryColor: formStore.theme.primaryColor,
-            submissionMessage: formStore.submissionMessage,
-            formData: formStore.formData,
-            currentStepIndex: formStore.currentStepIndex
-        });
-        
-        if (isFormLoaded && prevFormStateRef.current !== currentFormState) {
-            hasUnsavedChanges.current = true;
-            prevFormStateRef.current = currentFormState;
-        }
+        // Use setTimeout to ensure Zustand store has updated after state mutations
+
+        if(isPreviewMode) return;
+
+        const timeoutId = setTimeout(() => {
+            const currentFormState = JSON.stringify({
+                steps: formStore.steps,
+                title: formStore.title,
+                primaryColor: formStore.theme.primaryColor,
+                submissionMessage: formStore.submissionMessage,
+                formData: formStore.formData,
+                currentStepIndex: formStore.currentStepIndex
+            });
+            
+            if (isFormLoaded && prevFormStateRef.current !== currentFormState) {
+                console.log("Form has unsaved changes, triggering auto-save");
+                console.log("Previous state:", JSON.parse(prevFormStateRef.current));
+                console.log("Current state:", JSON.parse(currentFormState));
+                
+                debouncedSaveForm.current?.();
+                hasUnsavedChanges.current = true;
+                prevFormStateRef.current = currentFormState;
+            }
+        }, 0); // Use setTimeout 0 to defer until next tick
+
+        return () => clearTimeout(timeoutId);
     }, [
         formStore.steps,
         formStore.title,
-        formStore.theme.primaryColor,
         formStore.submissionMessage,
         formStore.formData,
-        formStore.currentStepIndex,
-        isFormLoaded
+        formStore.submissionMessage,
+        isFormLoaded,
     ]);
 
     // Load form data on mount
@@ -117,6 +153,7 @@ export default function FormEditPage() {
             loadFormData();
         }
 
+
     }, [formId]);
 
     // Auto-save when component unmounts
@@ -127,10 +164,12 @@ export default function FormEditPage() {
                     console.error('Failed to auto-save form:', error);
                 });
             }
+            debouncedSaveForm.current?.cancel();
 
-            formStore.resetFormData();
+            // DON'T reset form data - this was causing the clearing issue
+            // formStore.resetFormData();
         };
-    }, [formId, isFormLoaded]);
+    }, [formId, isFormLoaded, saveForm]);
 
     const handleSave = async () => {
         try {
@@ -322,6 +361,8 @@ export default function FormEditPage() {
                                     shareUrl={shareUrl}
                                     isSaving={isSaving}
                                     hasUnsavedChanges={hasUnsavedChanges.current}
+                                    isPreviewMode={isPreviewMode}
+                                    setIsPreviewMode={setIsPreviewMode}
                                     onBack={handleBack}
                                     onSave={handleSave}
                                     onTogglePublish={handleTogglePublish}

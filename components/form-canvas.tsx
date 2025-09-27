@@ -8,14 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Draggable from './draggable';
 import { StepNavigation } from './step-navigation';
 import { FormWrapper } from './form-wrapper';
-import { 
-  FormInput, 
-  FormTextarea, 
-  FormSelect, 
-  FormCheckbox, 
-  FormSwitch, 
-  FormButton, 
-  FormLabel 
+import {
+    FormInput,
+    FormTextarea,
+    FormSelect,
+    FormCheckbox,
+    FormSwitch,
+    FormButton,
+    FormLabel
 } from './form-fields-enhanced';
 import { PlusIcon, Eye, Edit3, ArrowLeft, Save, ExternalLink, ArrowDownNarrowWide, ArrowDown, Triangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,111 +27,113 @@ import PublicFormContent from './public-form-content';
 import PublicForm from './public-form';
 
 interface FormCanvasProps {
-  formId: string;
-  formTitle: string;
-  isPublished: boolean;
-  shareUrl: string;
-  isSaving: boolean;
-  hasUnsavedChanges: boolean;
-  onBack: () => void;
-  onSave: () => void;
-  onTogglePublish: () => Promise<void>;
-  onToggleAnonymous: (allow: boolean) => Promise<void>;
-  onToggleDuplicates: (allow: boolean) => Promise<void>;
-  theme: FormTheme
+    formId: string;
+    formTitle: string;
+    isPublished: boolean;
+    shareUrl: string;
+    isSaving: boolean;
+    hasUnsavedChanges: boolean;
+    isPreviewMode: boolean;
+    setIsPreviewMode: (isPreview: boolean) => void;
+    onBack: () => void;
+    onSave: () => void;
+    onTogglePublish: () => Promise<void>;
+    onToggleAnonymous: (allow: boolean) => Promise<void>;
+    onToggleDuplicates: (allow: boolean) => Promise<void>;
+    theme: FormTheme
 }
 
 interface FormContentProps {
-  title: string;
-  currentStep: any;
-  currentStepIndex: number;
-  steps: any[];
-  isPreviewMode: boolean;
-  setIsPreviewMode: (isPreview: boolean) => void;
-  components: FormComponent[];
-  theme: FormTheme
+    title: string;
+    currentStep: any;
+    currentStepIndex: number;
+    steps: any[];
+    isPreviewMode: boolean;
+    setIsPreviewMode: (isPreview: boolean) => void;
+    components: FormComponent[];
+    theme: FormTheme
 }
 
- const FormContent = ({
-   title,
-   currentStep,
-   currentStepIndex,
-   steps,
-   isPreviewMode,
-   setIsPreviewMode,
-   components,
-   theme
- }: FormContentProps) => (
-        <>
-            <div>
-                <div className="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 className="text-2xl py-2 font-semibold text-card-foreground">
-                            {title}
-                        </h2>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            {currentStep?.stepTitle} ({currentStepIndex + 1} of {steps.length})
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => setIsPreviewMode(!isPreviewMode)}
-                        className="flex items-center gap-2 p-2 border rounded-full border-border text-foreground hover:bg-muted
-                        cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
-                    >
-                        {isPreviewMode ? (
-                            <>
-                                <Edit3 className="w-4 h-4" />
-
-                            </>
-                        ) : (
-                            <>
-                                <Eye className="w-4 h-4" />
-
-                            </>
-                        )}
-                    </button>
-                </div>
-            </div>
-
-            {/* If there are no components, show a placeholder message */}
-            {components.length === 0 && (
-                <div className="flex items-center justify-center h-full w-full absolute top-0 left-0">
-                    <p className="text-center text-muted-foreground">
-                        Drag and drop form elements here
+const FormContent = ({
+    title,
+    currentStep,
+    currentStepIndex,
+    steps,
+    isPreviewMode,
+    setIsPreviewMode,
+    components,
+    theme
+}: FormContentProps) => (
+    <>
+        <div>
+            <div className="flex justify-between items-center mb-4">
+                <div>
+                    <h2 className="text-2xl py-2 font-semibold text-card-foreground">
+                        {title}
+                    </h2>
+                    <p className="text-sm text-muted-foreground mb-4">
+                        {currentStep?.stepTitle} ({currentStepIndex + 1} of {steps.length})
                     </p>
                 </div>
-            )}
+                <button
+                    onClick={() => setIsPreviewMode(!isPreviewMode)}
+                    className="flex items-center gap-2 p-2 border rounded-full border-border text-foreground hover:bg-muted
+                        cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                    {isPreviewMode ? (
+                        <>
+                            <Edit3 className="w-4 h-4" />
 
-            {isPreviewMode && components.length > 0 && (
-                <PublicForm
-                    isPreviewMode={true}
-                    submitResponse={undefined}
-                />
-            )}
+                        </>
+                    ) : (
+                        <>
+                            <Eye className="w-4 h-4" />
 
-            
+                        </>
+                    )}
+                </button>
+            </div>
+        </div>
 
-            {/* If there are components, map over them and render them */}
-            {!isPreviewMode && components.length > 0 && (
-                <div className="">
-                    {!isPreviewMode && <DropZone index={0} />}
-                    {components.map((component: FormComponent, index: number) => (
-                        <React.Fragment key={component.id}>
-                            { (
-                                <Draggable 
-                                    formComponentProps={component}
-                                    index={index}
-                                >
-                                    {renderComponent(component, false)}
-                                </Draggable>
-                            )}
-                            {!isPreviewMode && <DropZone index={index + 1} />}
-                        </React.Fragment>
-                    ))}
-                </div>
-            )}
-        </>
-    );
+        {/* If there are no components, show a placeholder message */}
+        {components.length === 0 && (
+            <div className="flex items-center justify-center h-full w-full absolute top-0 left-0">
+                <p className="text-center text-muted-foreground">
+                    Drag and drop form elements here
+                </p>
+            </div>
+        )}
+
+        {isPreviewMode && components.length > 0 && (
+            <PublicForm
+                isPreviewMode={true}
+                submitResponse={undefined}
+            />
+        )}
+
+
+
+        {/* If there are components, map over them and render them */}
+        {!isPreviewMode && components.length > 0 && (
+            <div className="">
+                {!isPreviewMode && <DropZone index={0} />}
+                {components.map((component: FormComponent, index: number) => (
+                    <React.Fragment key={component.id}>
+                        {(
+                            <Draggable
+                                formComponentProps={component}
+                                index={index}
+                            >
+                                {renderComponent(component, false)}
+                            </Draggable>
+                        )}
+                        {!isPreviewMode && <DropZone index={index + 1} />}
+                    </React.Fragment>
+                ))}
+            </div>
+        )}
+    </>
+);
 
 // Component to handle drop zones between components
 function DropZone({ index }: { index: number }) {
@@ -143,9 +145,8 @@ function DropZone({ index }: { index: number }) {
     return (
         <div
             ref={setNodeRef}
-            className={`h-2 transition-all ${
-                isOver ? 'h-8 bg-primary/20 border-2 border-dashed border-primary rounded' : ''
-            }`}
+            className={`h-2 transition-all ${isOver ? 'h-8 bg-primary/20 border-2 border-dashed border-primary rounded' : ''
+                }`}
         />
     );
 }
@@ -228,36 +229,37 @@ function DropZone({ index }: { index: number }) {
 // };
 
 function FormCanvas({
-  formId,
-  formTitle,
-  isPublished,
-  shareUrl,
-  isSaving,
-  hasUnsavedChanges,
-  onBack,
-  onSave,
-  onTogglePublish,
-  onToggleAnonymous,
-  onToggleDuplicates,
-  theme
+    formId,
+    formTitle,
+    isPublished,
+    shareUrl,
+    isSaving,
+    hasUnsavedChanges,
+    isPreviewMode,
+    setIsPreviewMode,
+    onBack,
+    onSave,
+    onTogglePublish,
+    onToggleAnonymous,
+    onToggleDuplicates,
+    theme
 }: FormCanvasProps) {
     const isMobile = useIsMobile();
     const isTablet = useIsTablet();
 
-    const [mobileSettingsOn, setMobileSettingsOn] = React.useState(false); 
-    
-    const { 
-        steps, 
-        currentStepIndex, 
-        title, 
-        setActiveComponentId, 
+    const [mobileSettingsOn, setMobileSettingsOn] = React.useState(false);
+
+    const {
+        steps,
+        currentStepIndex,
+        title,
+        setActiveComponentId,
         addStep,
-        getCurrentStepComponents 
+        getCurrentStepComponents
     } = useFormStore();
 
     const previousStepIndexRef = React.useRef(currentStepIndex);
     const [animationDirection, setAnimationDirection] = React.useState<'forward' | 'backward' | 'none'>('none');
-    const [isPreviewMode, setIsPreviewMode] = React.useState(false);
     const currentStep = steps[currentStepIndex];
     const components = getCurrentStepComponents();
 
@@ -288,7 +290,7 @@ function FormCanvas({
     const handleAddStep = () => {
         addStep();
     };
-    
+
     const handleFormSubmit = (data: any) => {
         console.log('Form submitted:', data);
         // Handle form submission here
@@ -296,8 +298,8 @@ function FormCanvas({
 
     const isMovingForward = currentStepIndex > previousStepIndexRef.current;
 
-    
-    
+
+
     // Animation variants based on direction
     const getAnimationProps = () => {
         if (isMovingForward) {
@@ -314,11 +316,11 @@ function FormCanvas({
     };
 
     const animationProps = getAnimationProps();
-    
+
 
     console.log("FormCanvas rendered with current step index:", currentStepIndex);
-   
-    
+
+
     return (
         <div className='h-fit w-full relative flex flex-col'>
             {/* Header with save/publish controls */}
@@ -329,7 +331,7 @@ function FormCanvas({
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             {isMobile ? "Back" : "Back to Forms"}
                         </Button>
-                        
+
                         <div className="flex items-center gap-2">
                             <h1 className={`font-semibold truncate ${isMobile ? 'text-base max-w-[150px]' : 'text-lg max-w-[300px]'}`}>
                                 {title || formTitle}
@@ -341,18 +343,18 @@ function FormCanvas({
 
                         <div className="flex items-center gap-2">
                             <Button variant="outline"
-                            
-                            size="sm" onClick={() => {setMobileSettingsOn(!mobileSettingsOn)}}>
+
+                                size="sm" onClick={() => { setMobileSettingsOn(!mobileSettingsOn) }}>
                                 <Triangle className={`h-4 w-4 ${mobileSettingsOn ? 'rotate-0' : 'rotate-60'} transition-all`} />
                             </Button>
                         </div>
                     </div>
-                    
+
                     <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={mobileSettingsOn ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
-                    transition={{ type: "tween", duration: 0.2 }}
-                    className={`flex w-full justify-end items-center ${isMobile ? 'gap-1' : 'gap-2'}`}>
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={mobileSettingsOn ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+                        transition={{ type: "tween", duration: 0.2 }}
+                        className={`flex w-full justify-end items-center ${isMobile ? 'gap-1' : 'gap-2'}`}>
                         <FormSettingsDropdown
                             formId={formId}
                             onTogglePublish={onTogglePublish}
@@ -360,7 +362,7 @@ function FormCanvas({
                             onToggleDuplicates={onToggleDuplicates}
                             isLoading={isSaving}
                         />
-                        
+
                         {isPublished && (
                             <Button
                                 variant="outline"
@@ -371,7 +373,7 @@ function FormCanvas({
                                 <span className='max-md:hidden'>Preview</span>
                             </Button>
                         )}
-                        
+
                         <Button
                             onClick={onSave}
                             disabled={isSaving || !hasUnsavedChanges}
@@ -411,14 +413,13 @@ function FormCanvas({
                     >
                         {isPreviewMode ? (
                             <div className={`mx-auto ${isMobile ? 'max-w-full px-2' : 'max-w-lg'}`}
-                           
+
                             >
                                 <main
-                                    className={`rounded-lg border-2 bg-card border-border mx-auto h-fit min-h-[600px] relative ${
-                                        isMobile ? 'p-4 max-w-full' : 'p-8 max-w-lg'
-                                    }`}
+                                    className={`rounded-lg border-2 bg-card border-border mx-auto h-fit min-h-[600px] relative ${isMobile ? 'p-4 max-w-full' : 'p-8 max-w-lg'
+                                        }`}
                                 >
-                                    <FormContent 
+                                    <FormContent
                                         title={title}
                                         currentStep={currentStep}
                                         currentStepIndex={currentStepIndex}

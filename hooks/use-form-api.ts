@@ -80,6 +80,7 @@ export function useFormApi({ onSuccess, onError }: UseFormApiProps = {}) {
 
   // saves the current form state to the database
   const saveForm = useCallback(async (formId?: string, formTitle?: string) => {
+    console.log("Saving form...", { formId, formTitle });
     setIsSaving(true);
     try {
       const formContent = storeToDatabase(formState);

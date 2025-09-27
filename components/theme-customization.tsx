@@ -43,7 +43,7 @@ export function ThemeCustomization({ formId }: ThemeCustomizationProps) {
       } finally {
         setIsUpdating(false);
       }
-    }, 1000),
+    }, 5000),
     [formId] // Only recreate if formId changes
   );
 

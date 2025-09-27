@@ -43,7 +43,7 @@ const renderComponent = (component: FormComponent, isPreviewMode: boolean = fals
   // Design Mode
   switch (component.type) {
     case 'Input':
-      return <Input placeholder={component.props?.placeholder || 'Enter text...'} />;
+      return <Input className='pointer-events-none' placeholder={component.props?.placeholder || 'Enter text...'} />;
     case 'Button':
       return <Button>{component.props?.buttonText || component.props?.label || 'Button'}</Button>;
     case 'Checkbox':
