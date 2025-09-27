@@ -8,6 +8,7 @@ import Footer from "@/components/footer";
 import ParallaxBackground from "@/components/parallax-background";
 import ParallaxSection from "@/components/parallax-section";
 import ScrollIndicator from "@/components/scroll-indicator";
+import FormBuilderBackground from "@/components/form-builder-background";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 
@@ -125,36 +126,8 @@ export default function Home() {
           </motion.div>
         </div>
         
-        {/* Enhanced hero background with more elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          {/* Large floating blobs with staggered animation delays */}
-          <motion.div 
-            className="absolute top-20 left-10 w-72 h-72 bg-green-200 dark:bg-green-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.2 }}
-            transition={{ duration: 2, delay: 0.5 }}
-          />
-          <motion.div 
-            className="absolute top-40 right-10 w-72 h-72 bg-blue-200 dark:bg-blue-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-2000"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.2 }}
-            transition={{ duration: 2, delay: 1 }}
-          />
-          <motion.div 
-            className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200 dark:bg-purple-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-4000"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.2 }}
-            transition={{ duration: 2, delay: 1.5 }}
-          />
-          <motion.div 
-            className="absolute bottom-20 right-20 w-72 h-72 bg-pink-200 dark:bg-pink-400/50 rounded-full mix-blend-multiply filter blur-sm opacity-20 animate-blob animation-delay-6000"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.2 }}
-            transition={{ duration: 2, delay: 2 }}
-          />
-          
-        
-        </div>
+        {/* Enhanced hero background with form builder elements */}
+        <FormBuilderBackground />
       </ParallaxSection>
 
       {/* Features Section with Parallax */}
