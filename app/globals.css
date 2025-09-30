@@ -284,3 +284,106 @@
   animation: pulse 1s infinite;
 }
 
+ .cl-footer {
+    display: none !important;
+  }
+
+    .cl-spinner {
+    display: inline-block !important;
+    visibility: visible !important;
+    border: 2px solid hsl(var(--primary-foreground)) !important;
+    border-right-color: transparent !important;
+    border-radius: 50% !important;
+    width: 20px !important;
+    height: 20px !important;
+    animation: cl-spin 0.8s linear infinite !important;
+  }
+
+  @keyframes cl-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* OAuth button loading states */
+  .cl-socialButtonsBlockButton[data-loading="true"] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cl-socialButtonsBlockButton[data-loading="true"]::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: cl-spin 0.8s linear infinite;
+    z-index: 10;
+  }
+
+  /* Hide button text during loading */
+  .cl-socialButtonsBlockButton[data-loading="true"] .cl-socialButtonsBlockButtonText,
+  .cl-socialButtonsBlockButton[data-loading="true"] .cl-socialButtonsProviderIcon {
+    opacity: 0;
+  }
+
+  /* Primary button loading states */
+  .cl-formButtonPrimary[data-loading="true"],
+  .cl-continueButton[data-loading="true"] {
+    position: relative;
+    pointer-events: none;
+  }
+
+  .cl-formButtonPrimary[data-loading="true"]::after,
+  .cl-continueButton[data-loading="true"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid hsl(var(--primary-foreground));
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: cl-spin 0.8s linear infinite;
+    z-index: 10;
+  }
+
+  
+
+  /* Loading button opacity adjustment */
+  .cl-loadingButton {
+    opacity: 0.8;
+    cursor: wait;
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Ensure proper focus states */
+  .cl-formButtonPrimary:focus,
+  .cl-continueButton:focus,
+  .cl-socialButtonsBlockButton:focus,
+  .cl-formButtonPrimary[data-loading="true"],
+  .cl-continueButton[data-loading="true"],
+  .cl-socialButtonsBlockButton[data-loading="true"] {
+    outline: 2px solid hsl(var(--primary-foreground));
+    outline-offset: 2px;
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  /* Fix verification input styling */
+  .cl-otpCodeFieldInput {
+    background-color: hsl(var(--background) / 0.8) !important;
+    border: 1px solid hsl(var(--border) / 0.6) !important;
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  .cl-otpCodeFieldInput:focus {
+    border-color: hsl(var(--primary)) !important;
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.3) !important;
+  }
+

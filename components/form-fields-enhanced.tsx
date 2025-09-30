@@ -41,6 +41,8 @@ export function FormInput({ component, className = '' }: FormFieldProps) {
                 type={component.props.inputType || 'text'}
                 placeholder={component.props.placeholder}
                 className={error ? 'border-red-500' : ''}
+                style={{
+                }}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
