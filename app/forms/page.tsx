@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { useFormApi } from '@/hooks/use-form-api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,6 +46,7 @@ export default function FormsPage() {
   const [filterPublished, setFilterPublished] = useState<'all' | 'published' | 'draft'>('all');
   
   const router = useRouter();
+  const { user, isLoaded } = useUser();
   
   const { getForms, createForm, deleteForm, togglePublish, isLoading, isSaving } = useFormApi({
     onSuccess: (message) => {
@@ -66,8 +68,10 @@ export default function FormsPage() {
   };
 
   useEffect(() => {
-    loadForms();
-  }, []);
+    if (isLoaded && user) {
+      loadForms();
+    }
+  }, [isLoaded, user]);
 
   const handleCreateForm = async () => {
     if (!newFormTitle.trim()) return;
@@ -121,7 +125,8 @@ export default function FormsPage() {
     return matchesSearch && matchesFilter;
   });
 
-  if (isLoading) {
+  // Show loading for auth or data
+  if (!isLoaded || isLoading) {
     return (
       <div className="container max-w-screen-xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">

@@ -1,8 +1,20 @@
 "use client"
 import { SignIn } from '@clerk/nextjs'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 
 function SignInPage() {
+  const router = useRouter()
+  const { isSignedIn, isLoaded } = useUser()
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      // Force a hard refresh to ensure all client state is updated
+      router.push('/forms')
+      router.refresh()
+    }
+  }, [isSignedIn, isLoaded, router])
   return (
     <div className='flex justify-center items-center min-h-screen p-4 bg-gradient-to-br from-green-50/30 via-background to-green-50/30 dark:from-green-950/10 dark:via-background dark:to-green-950/10'>
       {/* Background decorative elements */}
@@ -69,8 +81,11 @@ function SignInPage() {
               spacingUnit: '1rem',
             }
           }}
+          afterSignInUrl="/forms"
+          afterSignUpUrl="/forms"
           redirectUrl="/forms"
-          forceRedirectUrl="/forms"
+          signUpUrl="/sign-up"
+          
         />
       </div>
     </div>

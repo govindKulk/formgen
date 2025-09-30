@@ -256,7 +256,7 @@ export function FormMCQ({ component, className = '' }: FormFieldProps) {
                                 </div>
                             )}
                         </div>
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className="text-sm font-medium text-muted-foreground">
                             {option}
                         </span>
                     </div>

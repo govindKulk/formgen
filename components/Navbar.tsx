@@ -2,12 +2,15 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './ui/button'
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/nextjs'
+import { SignedIn, SignedOut, SignInButton, SignUpButton, useAuth, useUser } from '@clerk/nextjs'
 import { ThemeToggle } from './theme-toggle'
 import { CustomUserMenu } from './custom-user-menu'
+import { auth } from '@clerk/nextjs/server'
 
 
-export default function Navbar() {
+export default async function Navbar() {
+    const user = await auth();
+    
     return (
         <nav className="bg-background/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,32 +45,36 @@ export default function Navbar() {
                         {/* Theme Toggle */}
                         <ThemeToggle />
 
-                        <SignedOut>
-                            <SignInButton>
-                                <Button
-                                    variant="outline"
-                                    className="border-primary text-primary rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 hover:bg-primary/10 transition-all cursor-pointer duration-200 hover:scale-105"
-                                >
-                                    Sign In
-                                </Button>
-                            </SignInButton>
-                            <SignUpButton>
-                                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer transition-all duration-200 hover:scale-105">
-                                    Sign Up
-                                </Button>
-                            </SignUpButton>
-                        </SignedOut>
-                        <SignedIn>
-                            <Button
-                                asChild
-                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-full font-medium transition-all duration-200 transform hover:scale-105"
-                            >
-                                <Link href="/forms">
-                                    Dashboard
-                                </Link>
-                            </Button>
-                            <CustomUserMenu />
-                        </SignedIn>
+                        {user.isAuthenticated ? (<SignedIn>
+                                    <Button
+                                        asChild
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-full font-medium transition-all duration-200 transform hover:scale-105"
+                                    >
+                                        <Link href="/forms">
+                                            Dashboard
+                                        </Link>
+                                    </Button>
+                                    <CustomUserMenu />
+                                </SignedIn>) : (
+                            <>
+                                <SignedOut>
+                                    <SignInButton>
+                                        <Button
+                                            variant="outline"
+                                            className="border-primary text-primary rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 hover:bg-primary/10 transition-all cursor-pointer duration-200 hover:scale-105"
+                                        >
+                                            Sign In
+                                        </Button>
+                                    </SignInButton>
+                                    <SignUpButton>
+                                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer transition-all duration-200 hover:scale-105">
+                                            Sign Up
+                                        </Button>
+                                    </SignUpButton>
+                                </SignedOut>
+                                
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
