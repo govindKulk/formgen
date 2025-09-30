@@ -27,28 +27,28 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex space-x-4">
               <Link 
-                href="#" 
+                href="https://github.com/govindKulk/formgen" 
                 className="text-muted-foreground hover:text-green-600 transition-colors p-2 rounded-full hover:bg-green-50 dark:hover:bg-green-950/20"
                 aria-label="GitHub"
               >
                 <Github className="w-5 h-5" />
               </Link>
               <Link 
-                href="#" 
+                href="https://x.com/GovindK02338279" 
                 className="text-muted-foreground hover:text-green-600 transition-colors p-2 rounded-full hover:bg-green-50 dark:hover:bg-green-950/20"
                 aria-label="Twitter"
               >
                 <Twitter className="w-5 h-5" />
               </Link>
               <Link 
-                href="#" 
+                href="https://www.linkedin.com/in/govind-kulkarni-44aa71228" 
                 className="text-muted-foreground hover:text-green-600 transition-colors p-2 rounded-full hover:bg-green-50 dark:hover:bg-green-950/20"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
               </Link>
               <Link 
-                href="#" 
+                href="mailto:kulkarnigovind2003@gmail.com"  
                 className="text-muted-foreground hover:text-green-600 transition-colors p-2 rounded-full hover:bg-green-50 dark:hover:bg-green-950/20"
                 aria-label="Email"
               >
@@ -79,12 +79,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
+                <Link href="/" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
                   Analytics
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
+                <Link href="https://github.com/govindKulk/formgen" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
                   API Documentation
                 </Link>
               </li>
@@ -98,7 +98,7 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
+                <Link href="https://github.com/govindKulk/formgen" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
                   Documentation
                 </Link>
               </li>
@@ -108,7 +108,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
+                <Link href="https://govindkulkarni.me" className="text-muted-foreground hover:text-green-600 text-sm transition-colors">
                   Blog
                 </Link>
               </li>
