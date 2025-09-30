@@ -185,6 +185,102 @@
 .dark .cl-button__github, .dark .cl-button__github span {
   background-color:  var(--foreground) !important;
   color: var(--secondary) !important;
+}
 
+/* Mobile touch improvements for drag and drop */
+@media (max-width: 767px) {
+  /* Hide drag handles on mobile - use long press instead */
+  [data-dnd-kit-draggable-handle] {
+    display: none !important;
+  }
+  
+  /* Prevent text selection during drag on mobile */
+  .touch-manipulation {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Long press feedback animation */
+  .long-press-active {
+    animation: longPressGlow 0.4s ease-in-out;
+    transform: scale(1.02);
+  }
+  
+  /* Improve drag feedback on touch devices */
+  [data-dnd-kit-dragging="true"] {
+    /* Allow position transform to work, only add visual effects */
+    filter: brightness(1.1);
+    z-index: 1000 !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  /* Mobile-specific drag effects - don't override transform */
+  @media (hover: none) and (pointer: coarse) {
+    [data-dnd-kit-dragging="true"] {
+      scale: 1.05;
+      filter: brightness(1.2);
+    }
+  }
+  
+  /* Long press glow effect */
+  @keyframes longPressGlow {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+  }
+  
+  /* Improve drop zone feedback on mobile */
+  [data-dnd-kit-drop-zone]:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: rgb(59, 130, 246);
+  }
+  
+  /* Better visual feedback for mobile draggable components */
+  [data-dnd-kit-draggable] {
+    position: relative;
+  }
+  
+  /* Mobile component active state */
+  [data-dnd-kit-draggable].component-active {
+    border: 2px solid rgb(59, 130, 246);
+    border-radius: 8px;
+  }
+  
+  /* Enhanced mobile drag feedback */
+  [data-dnd-kit-draggable][data-dnd-kit-dragging="true"] {
+    transform: scale(1.05) rotate(2deg) !important;
+    z-index: 1000 !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+/* Enhanced touch action for all draggable elements */
+[data-dnd-kit-draggable] {
+  touch-action: none;
+}
+
+/* Improve visual feedback for active drag states */
+.dnd-active {
+  opacity: 0.9;
+  transform: scale(1.05) rotate(2deg);
+  transition: all 0.2s ease;
+  z-index: 999;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Smoother transitions for drag operations */
+[data-dnd-kit-draggable]:not([data-dnd-kit-dragging="true"]) {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Better drop zone visual feedback */
+.drop-zone-active {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 2px dashed rgb(59, 130, 246);
+  animation: pulse 1s infinite;
 }
 

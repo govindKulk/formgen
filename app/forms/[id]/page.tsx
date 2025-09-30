@@ -6,7 +6,7 @@ import { useFormApi } from '@/hooks/use-form-api';
 import FormCanvas from '@/components/form-canvas'
 import FormCreateSidebar from '@/components/form-create-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import {DndContext, DragEndEvent, DragOverlay, closestCenter, DragStartEvent, Active, MouseSensor, TouchSensor, useSensor, useSensors} from '@dnd-kit/core'
+import {DndContext, DragEndEvent, closestCenter, DragStartEvent, Active, MouseSensor, TouchSensor, useSensor, useSensors, DragOverlay} from '@dnd-kit/core'
 import { useFormStore, FormComponentType } from '@/store/form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,6 +16,8 @@ import { updateFormSettings } from '@/lib/form-actions';
 import toast from 'react-hot-toast';
 import { ResponsiveLayout } from '@/components/responsive-layout';
 import { debouncer } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-media-query';
+import MobileDragDebug from '@/components/mobile-drag-debug';
 
 export default function FormEditPage() {
     const params = useParams();
@@ -44,6 +46,7 @@ export default function FormEditPage() {
     // Original DnD functionality
     const {addComponent, steps, currentStepIndex, moveComponent, removeStep} = useFormStore();
     const [activeItem, setActiveItem] = useState<Active | null>(null);
+    const isMobile = useIsMobile();
     
     // Configure sensors for better touch support
     const mouseSensor = useSensor(MouseSensor, {
@@ -54,8 +57,8 @@ export default function FormEditPage() {
     
     const touchSensor = useSensor(TouchSensor, {
         activationConstraint: {
-            delay: 200,
-            tolerance: 8,
+            delay: isMobile ? 500 : 100, // Long press (500ms) on mobile for drag activation
+            tolerance: isMobile ? 8 : 10, // Reduced tolerance for more precise activation
         },
     });
     
@@ -75,7 +78,7 @@ export default function FormEditPage() {
     
     // Initialize debounced save function only once
     useEffect(() => {
-        debouncedSaveForm.current = debouncer(5000, async () => {
+        debouncedSaveForm.current = debouncer(10000, async () => {
             try {
                 console.log("🔄 AUTO-SAVE triggered (debounced) with current state:", formStore.steps?.length || 0, "components");
                 await saveFormRef.current(formId, formTitle);
@@ -256,11 +259,111 @@ export default function FormEditPage() {
     
     const handleDragStart = (event: DragStartEvent) => {
         setActiveItem(event.active);
+        
+        // Add mobile feedback - stronger vibration for long press activation
+        if (isMobile && 'vibrate' in navigator) {
+            navigator.vibrate(50); // Longer vibration for drag start
+        }
+    };
+
+    // Render drag overlay only for sidebar items (not canvas items)
+    const renderDragOverlay = () => {
+        if (!activeItem) return null;
+        
+        const activeData = activeItem.data.current;
+        
+        // Only show overlay for sidebar items being dragged to canvas
+        if (activeData?.type && typeof activeData.type === 'string' && activeData.type !== "canvas-item") {
+            const componentType = activeData.type as FormComponentType;
+            
+            return (
+                <div className="bg-white border-2 border-blue-500 rounded-lg p-4 shadow-lg opacity-90 transform rotate-3 scale-105">
+                    {renderSidebarComponentPreview(componentType)}
+                </div>
+            );
+        }
+        
+        return null;
+    };
+
+    // Helper function to render component previews for the drag overlay
+    const renderSidebarComponentPreview = (type: FormComponentType) => {
+        switch (type) {
+            case 'Input':
+                return (
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Text Input</label>
+                        <Input placeholder="Enter text..." className="pointer-events-none" />
+                    </div>
+                );
+            case 'Button':
+                return <Button className="pointer-events-none">Button</Button>;
+            case 'Textarea':
+                return (
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Text Area</label>
+                        <textarea 
+                            className="w-full p-2 border rounded resize-none pointer-events-none"
+                            rows={3}
+                            placeholder="Enter long text..."
+                        />
+                    </div>
+                );
+            case 'Checkbox':
+                return (
+                    <div className="flex items-center space-x-2">
+                        <input type="checkbox" className="pointer-events-none" />
+                        <label className="text-sm">Checkbox Option</label>
+                    </div>
+                );
+            case 'Select':
+                return (
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Select Dropdown</label>
+                        <select className="w-full p-2 border rounded pointer-events-none">
+                            <option>Choose option...</option>
+                        </select>
+                    </div>
+                );
+            case 'Switch':
+                return (
+                    <div className="flex items-center space-x-2">
+                        <div className="w-8 h-4 bg-gray-300 rounded-full pointer-events-none"></div>
+                        <label className="text-sm">Toggle Switch</label>
+                    </div>
+                );
+            case 'Label':
+                return <label className="text-sm font-medium pointer-events-none">Text Label</label>;
+            case 'MCQ':
+                return (
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Multiple Choice</label>
+                        <div className="space-y-1">
+                            <div className="flex items-center space-x-2">
+                                <input type="radio" name="mcq-preview" className="pointer-events-none" />
+                                <label className="text-sm">Option 1</label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <input type="radio" name="mcq-preview" className="pointer-events-none" />
+                                <label className="text-sm">Option 2</label>
+                            </div>
+                        </div>
+                    </div>
+                );
+            default:
+                return <div className="p-2 border rounded text-sm">{type} Component</div>;
+        }
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const {active, over} = event;
         setActiveItem(null);
+        
+        // Add mobile feedback on successful drop
+        if (over && isMobile && 'vibrate' in navigator) {
+            navigator.vibrate(20);
+        }
+        
         if (!over) {
             return;
         };
@@ -309,56 +412,6 @@ export default function FormEditPage() {
         }
     }
 
-    // Render the drag overlay
-    const renderDragOverlay = () => {
-        if (!activeItem) return null;
-
-        const activeData = activeItem.data.current;
-
-        // If dragging from sidebar
-        if (activeData?.type && typeof activeData.type === 'string') {
-            return (
-                <div className="flex items-center gap-2 p-3 bg-card border border-border rounded-lg shadow-lg opacity-95 pointer-events-none">
-                    <GripVertical className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium text-foreground">{activeData.type}</span>
-                        <div className="w-full">
-                            {activeData.type === "Input" && <Input className="h-6 text-xs pointer-events-none" placeholder="Type here..." />}
-                            {activeData.type === "Button" && <Button size="sm" className="h-6 text-xs pointer-events-none">Click me</Button>}
-                            {activeData.type === "Textarea" && <div className="border border-border rounded p-1 text-xs w-32 h-6 flex items-center text-foreground bg-background">Textarea</div>}
-                            {activeData.type === "Checkbox" && <div className="flex items-center gap-1"><input type="checkbox" className="pointer-events-none" /><span className="text-xs text-foreground">Checkbox</span></div>}
-                            {activeData.type === "Select" && <select className="border border-border rounded px-1 text-xs h-6 w-24 pointer-events-none bg-background text-foreground"><option>Select</option></select>}
-                            {activeData.type === "Switch" && <div className="flex items-center gap-1"><div className="w-6 h-3 bg-border rounded-full"><div className="w-2 h-2 bg-background rounded-full mt-0.5 ml-0.5"></div></div><span className="text-xs text-foreground">Switch</span></div>}
-                            {activeData.type === "Label" && <label className="text-xs font-medium text-foreground">Label text</label>}
-                            {activeData.type === "Dialog" && <div className="border border-border rounded px-2 py-1 text-xs text-foreground bg-background">Dialog</div>}
-                            {activeData.type === "Tooltip" && <div className="border border-border rounded px-2 py-1 text-xs text-foreground bg-background">Tooltip</div>}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // If dragging canvas item - make it smaller and without tilt
-        if (activeData?.type === 'canvas-item') {
-            const component = activeData.formComponent;
-            return (
-                <div className="p-3 bg-card border border-border rounded-lg shadow-lg opacity-95 min-w-[150px] max-w-[200px] pointer-events-none">
-                    <div className="flex items-center gap-2">
-                        <GripVertical className="h-3 w-3 text-muted-foreground" />
-                        <div>
-                            <div className="text-xs font-medium text-foreground">{component.type}</div>
-                            <div className="text-xs text-muted-foreground truncate">
-                                {component.props?.label || `${component.type} Component`}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        return null;
-    };
-
     // Show loading state
     if (isLoading || !isFormLoaded) {
         return (
@@ -405,12 +458,14 @@ export default function FormEditPage() {
                             }
                             rightSidebar={<PropertiesPanel />}
                         />
+                        {/* DragOverlay for sidebar items only - canvas items move directly */}
                         <DragOverlay>
                             {renderDragOverlay()}
                         </DragOverlay>
                     </DndContext>
                 </SidebarProvider>
             </div>
+            <MobileDragDebug />
         </div>
     );
 }

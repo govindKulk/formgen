@@ -49,7 +49,9 @@ function SidebarItem({ type }: { type: FormComponentType }) {
             <Button
                 ref={setNodeRef}
                 variant="outline"
-                className={`w-full flex items-center gap-2 p-3 bg-muted border rounded-lg h-auto cursor-grab transition-all ${isDragging ? 'opacity-30 ring-2 ring-primary' : 'hover:shadow-md'} ${
+                data-dnd-kit-draggable={`sidebar-${type}`}
+                data-dnd-kit-dragging={isDragging}
+                className={`w-full flex items-center gap-2 p-3 bg-muted border rounded-lg h-auto cursor-grab transition-all ${isDragging ? 'opacity-30 ring-2 ring-primary dnd-active' : 'hover:shadow-md'} ${
                     isMobile || isTablet ? 'touch-manipulation select-none' : ''
                 }`}
                 {...listeners}
