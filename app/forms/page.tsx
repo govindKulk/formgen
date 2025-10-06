@@ -160,6 +160,11 @@ export default function FormsPage() {
     );
   }
 
+  if(isLoaded && !user) {
+    router.push('/sign-in');
+    return null;
+  }
+
   return (
     <div className="container px-4 py-8 max-w-screen-xl mx-auto">
       {/* Header */}

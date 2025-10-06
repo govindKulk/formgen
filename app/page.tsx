@@ -30,9 +30,9 @@ export default function Home() {
     <div ref={containerRef} className="min-h-[calc(100vh-64px)]">
       {/* Scroll Progress Indicator */}
       <ScrollIndicator />
-      
+
       {/* Global parallax background */}
-      <motion.div 
+      <motion.div
         className="fixed h-screen inset-0 bg-gradient-to-br from-green-50/80 via-background to-green-100/80 dark:from-green-950/10 dark:via-background dark:to-green-950/10"
         style={{ y: backgroundY }}
       />
@@ -41,28 +41,28 @@ export default function Home() {
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <motion.div
           className="absolute top-1/4 left-[10%] w-6 h-6 bg-green-400/30 dark:bg-green-300/20 rounded-full animate-parallax-float animation-delay-1000"
-          style={{ 
+          style={{
             y: useTransform(scrollYProgress, [0, 1], [0, -300]),
             x: useTransform(scrollYProgress, [0, 1], [0, 100])
           }}
         />
         <motion.div
           className="absolute top-1/2 right-[15%] w-4 h-4 bg-blue-400/40 dark:bg-blue-300/30 rounded-full animate-gentle-sway animation-delay-3000"
-          style={{ 
+          style={{
             y: useTransform(scrollYProgress, [0, 1], [0, -500]),
             x: useTransform(scrollYProgress, [0, 1], [0, -150])
           }}
         />
         <motion.div
           className="absolute bottom-1/3 left-[20%] w-8 h-8 bg-purple-400/25 dark:bg-purple-300/20 rounded-full animate-morph animation-delay-5000"
-          style={{ 
+          style={{
             y: useTransform(scrollYProgress, [0, 1], [0, -400]),
             rotate: useTransform(scrollYProgress, [0, 1], [0, 720])
           }}
         />
         <motion.div
           className="absolute top-3/4 right-[25%] w-5 h-5 bg-pink-400/35 dark:bg-pink-300/25 rounded-full animate-parallax-drift animation-delay-2000"
-          style={{ 
+          style={{
             y: useTransform(scrollYProgress, [0, 1], [0, -600]),
             x: useTransform(scrollYProgress, [0, 1], [0, 200])
           }}
@@ -72,14 +72,14 @@ export default function Home() {
       {/* Hero Section with Enhanced Parallax */}
       <ParallaxSection variant="hero" className="relative  h-[calc(100vh-64px)] flex flex-col items-center justify-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-fit my-auto ">
-          <motion.div 
+          <motion.div
             className="text-center"
             style={{ scale: heroScale }}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
           >
-            <motion.h1 
+            <motion.h1
               className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -89,7 +89,7 @@ export default function Home() {
               <br />
               <span className="text-primary">Without Code</span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed "
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -98,13 +98,13 @@ export default function Home() {
               Create sophisticated forms with conditional logic, export framework-ready code, or share
               instantly. All with our intuitive drag-and-drop builder.
             </motion.p>
-            <motion.div 
+            <motion.div
               className="flex flex-col sm:flex-row gap-6 justify-center items-center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
             >
-              <Button 
+              <Button
                 asChild
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -114,18 +114,21 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-primary text-primary hover:bg-primary/10 px-8 py-4 rounded-full text-lg cursor-pointer font-medium transition-all duration-200"
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Watch Demo
-              </Button>
+              <Link href="https://youtu.be/6QdHiJrlLrk" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-primary text-primary hover:bg-primary/10 px-8 py-4 rounded-full text-lg cursor-pointer font-medium transition-all duration-200"
+                >
+                  <Play className="w-5 h-5 mr-2" />
+
+                  Watch Demo
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>
-        
+
         {/* Enhanced hero background with form builder elements */}
         <FormBuilderBackground />
       </ParallaxSection>
@@ -133,7 +136,7 @@ export default function Home() {
       {/* Features Section with Parallax */}
       <ParallaxSection variant="features" className="py-24 bg-background/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-20"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -291,7 +294,7 @@ export default function Home() {
       {/* How It Works Section with Parallax */}
       <ParallaxSection variant="steps" className="py-24 bg-muted/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             className="text-center mb-20"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -310,14 +313,14 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {/* Step 1 */}
-            <motion.div 
+            <motion.div
               className="text-center"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
               viewport={{ once: true }}
             >
-              <motion.div 
+              <motion.div
                 className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg"
                 whileHover={{ scale: 1.1, rotate: 360 }}
                 transition={{ duration: 0.5 }}
@@ -332,14 +335,14 @@ export default function Home() {
             </motion.div>
 
             {/* Step 2 */}
-            <motion.div 
+            <motion.div
               className="text-center"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <motion.div 
+              <motion.div
                 className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg"
                 whileHover={{ scale: 1.1, rotate: 360 }}
                 transition={{ duration: 0.5 }}
@@ -353,14 +356,14 @@ export default function Home() {
             </motion.div>
 
             {/* Step 3 */}
-            <motion.div 
+            <motion.div
               className="text-center"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
               viewport={{ once: true }}
             >
-              <motion.div 
+              <motion.div
                 className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg"
                 whileHover={{ scale: 1.1, rotate: 360 }}
                 transition={{ duration: 0.5 }}
@@ -377,7 +380,7 @@ export default function Home() {
       </ParallaxSection>
 
       {/* Footer with smooth entrance */}
-     <ParallaxSection variant="footer" className="">
+      <ParallaxSection variant="footer" className="">
         <Footer />
       </ParallaxSection>
     </div>
