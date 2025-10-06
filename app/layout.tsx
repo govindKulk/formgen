@@ -9,6 +9,7 @@ import {
 
 import Navbar from "@/components/Navbar";
 import { AuthStateHandler } from "@/components/auth-state-handler";
+import StructuredData from "@/components/structured-data";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,8 +22,86 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "formGen - Create multi-step forms with clicks.",
-  description: "A simple and intuitive way to create multi-step forms for your applications.",
+  title: "formGen - Create multi-step forms with clicks",
+  description: "Build beautiful, responsive multi-step forms with our drag-and-drop builder. Custom branding, real-time analytics, and mobile optimization included.",
+  keywords: ["form builder", "multi-step forms", "drag and drop", "form creator", "survey builder", "custom forms", "analytics"],
+  authors: [{ name: "Govind Kulkarni" }],
+  creator: "formGen",
+  publisher: "formGen",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  
+  // OpenGraph metadata for social sharing
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://formgene.vercel.app",
+    siteName: "formGen",
+    title: "formGen - Create multi-step forms with clicks",
+    description: "Build beautiful, responsive multi-step forms with our drag-and-drop builder. Custom branding, real-time analytics, and mobile optimization included.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "formGen - Drag & Drop Form Builder",
+        type: "image/png",
+      },
+    ],
+  },
+  
+  // Twitter Card metadata
+  twitter: {
+    card: "summary_large_image",
+    site: "@GovindK02338279", // Add your Twitter handle
+    creator: "@GovindK02338279", // Add your personal Twitter handle
+    title: "formGen - Create multi-step forms with clicks",
+    description: "Build beautiful, responsive multi-step forms with our drag-and-drop builder. Custom branding, real-time analytics, and mobile optimization included.",
+    images: ["/og-image.png"],
+  },
+  
+  // Additional meta tags
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  
+  // Viewport and mobile optimization
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  
+  // App-specific metadata
+  applicationName: "formGen",
+  referrer: "origin-when-cross-origin",
+  category: "productivity",
+  
+  // Icons
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180" },
+    ],
+    shortcut: "/favicon.ico",
+  },
+  
+  // Manifest for PWA
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -45,7 +124,7 @@ export default function RootLayout({
     >
       <html lang="en" suppressHydrationWarning>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          
+            <StructuredData />
             <AuthStateHandler />
             <Navbar/>
             {children}

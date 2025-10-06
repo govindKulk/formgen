@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Disallow private/sensitive pages
+Disallow: /api/
+Disallow: /forms/*
+Disallow: /analytics/*
+Disallow: /sign-in
+Disallow: /sign-up
+
+# Allow public form sharing
+Allow: /s/
+
+# Sitemap
+Sitemap: https://formgene.vercel.app/sitemap.xml
+
+# Crawl delay (optional, in seconds)
+Crawl-delay: 1
